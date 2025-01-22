@@ -1,0 +1,5 @@
+name: MarketplacePlugin
+version: '1.0-SNAPSHOT'
+main: com.loficostudios.marketplacePlugin.MarketplacePlugin
+api-version: '1.20'
+depend: [LofiCoffeeCore]
