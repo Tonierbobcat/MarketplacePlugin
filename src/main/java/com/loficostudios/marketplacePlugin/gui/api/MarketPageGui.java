@@ -50,9 +50,6 @@ public class MarketPageGui extends Gui {
         }
     }
 
-    public void refresh() {
-        displayListings(market);
-    }
 
     private void onClick(Player player, GuiIcon icon)
     {
@@ -71,5 +68,11 @@ public class MarketPageGui extends Gui {
     @Override
     protected @Nullable String getTitle() {
         return "";
+    }
+
+    @Override
+    public void refresh() {
+        displayListings(market);
+        MarketplacePlugin.getInstance().getServer().broadcastMessage("refreshed gui");
     }
 }

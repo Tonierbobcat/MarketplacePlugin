@@ -21,10 +21,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import static com.loficostudios.marketplacePlugin.market.BuyItemResult.Type.*;
-
 @SuppressWarnings("LombokGetterMayBeUsed")
-public class Market {
+public class Market implements IMarket {
 
     public static final String SELL_PERMISSION = MarketplacePlugin.NAMESPACE + ".sell";
 
@@ -75,17 +73,25 @@ public class Market {
         }
     }
 
-    public BuyItemResult buyItem(Player player, UUID itemUUID) {
+    public BuyItemResult buyItem(Player buyer, UUID itemUUID) {
         var listing = getListing(itemUUID);
-        double price = listing.getPrice();
-        if (!MarketplacePlugin.getInstance().getEconomy().withdrawPlayer(player, price).transactionSuccess())
-            return new BuyItemResult(0, null, NOT_ENOUGHT_MONEY);
+        if (listing == null) {
+            return new BuyItemResult(0, null, BuyItemResult.Type.INVALID_LISTING);
+        }
+        var seller = listing.getSeller();
+        double price = getPrice(buyer, seller, listing);
 
+        if (!MarketplacePlugin.getInstance().getEconomy().has(buyer, price))
+            return new BuyItemResult(0, null, BuyItemResult.Type.NOT_ENOUGHT_MONEY);
         if (!removeListing(listing))
-            return new BuyItemResult(0, null, FAILURE);
+            return new BuyItemResult(0, null, BuyItemResult.Type.FAILURE);
+        if (!plugin.getEconomy().depositPlayer(seller, listing.getPrice()).transactionSuccess())
+            return new BuyItemResult(0, null, BuyItemResult.Type.SELLER_TRANSACTION_FAILURE);
+        if (!plugin.getEconomy().withdrawPlayer(buyer, price).transactionSuccess())
+            return new BuyItemResult(0, null, BuyItemResult.Type.BUYER_TRANSACTION_FAILURE);
 
-        player.getInventory().addItem(listing.getItem());
-        return new BuyItemResult(price, listing.getItem(), SUCCESS);
+        buyer.getInventory().addItem(listing.getItem());
+        return new BuyItemResult(price, listing.getItem(), BuyItemResult.Type.SUCCESS);
     }
 
     public boolean removeListing(ItemListing listing) {
@@ -201,5 +207,10 @@ public class Market {
 
     private void loadAsync() {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, this::load);
+    }
+
+    @Override
+    public double getPrice(OfflinePlayer buyer, OfflinePlayer seller, ItemListing listing) {
+        return listing.getPrice();
     }
 }

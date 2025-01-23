@@ -50,6 +50,9 @@ public abstract class Gui implements InventoryHolder {
     @Getter
     private Map<Integer, GuiIcon> icons = new HashMap<>();
 
+    public void refresh() {
+    }
+
     private void create() {
         String title = getTitle();
         int size = validateSize(getSize());
@@ -109,9 +112,9 @@ public abstract class Gui implements InventoryHolder {
         player.closeInventory();
     }
 
-    public void refreshGui(@NotNull Player player, @NotNull Gui gui) {
-        gui.open(player);
-    }
+//    public void refreshGui(@NotNull Player player, @NotNull Gui gui) {
+//        gui.open(player);
+//    }
 
     public void setSlot(@NotNull Integer slot, @NotNull GuiIcon icon) {
 

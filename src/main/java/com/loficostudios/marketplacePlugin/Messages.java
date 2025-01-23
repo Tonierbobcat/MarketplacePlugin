@@ -34,6 +34,9 @@ public class Messages {
     public static final String MARKET_NOT_ENOUGH_TO_BUY = "Not enough money to buy this item you need {price} to buy {item}";
     @MessageField
     public static final String INVALID_ITEM = "Invalid Item!";
+    public static final String INVALID_LISTING = "Invalid Listing!";
+    public static final String SELLER_TRANSACTION_NOT_SUCCESSFUL = "Error occured when depositing funds to seller";
+    public static final String BUYER_TRANSACTION_NOT_SUCCESSFUL = "Error occured when depositing funds to buyer" ;
 
     public static void saveConfig() {
         YamlFile file = new YamlFile("messages.yml", MarketplacePlugin.getInstance());
