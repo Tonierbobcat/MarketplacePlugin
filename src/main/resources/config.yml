@@ -1,0 +1,6 @@
+mongodb:
+  database: "marketplace"
+  username: "user"
+  password: "passwd"
+  hostname: "loficostudios.com"
+  port: 27017

@@ -1,4 +1,4 @@
-package com.loficostudios.marketplacePlugin;
+package com.loficostudios.marketplacePlugin.utils;
 
 import org.bukkit.entity.Player;
 

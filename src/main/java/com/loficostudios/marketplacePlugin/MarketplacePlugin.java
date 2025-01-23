@@ -1,5 +1,6 @@
 package com.loficostudios.marketplacePlugin;
 
+import com.loficostudios.marketplacePlugin.utils.MongoDBUtils;
 import dev.jorel.commandapi.*;
 import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
@@ -30,8 +31,15 @@ public final class MarketplacePlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         CommandAPI.onEnable();
-        setupEconomy();
 
+        saveDefaultConfig();
+
+        setupEconomy();
+        MongoDBUtils.initialize(this.getConfig());
+        if (!MongoDBUtils.isInited()) {
+            getLogger().log(Level.SEVERE, "Failed initialize database");
+            getServer().getPluginManager().disablePlugin(this);
+        }
 
         registerCommands();
         registerListeners();

@@ -1,24 +1,34 @@
 package com.loficostudios.marketplacePlugin.market;
 
 import com.loficostudios.marketplacePlugin.listing.ItemListing;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.json.simple.ItemList;
 
 import java.util.*;
 
 public class Market {
 
-    Map<UUID, HashSet<ItemListing>> listings  = new HashMap<>();
+    Map<UUID, HashSet<ItemListing>> playerListings = new HashMap<>();
 
 
 
     public void listItem(Player player, ItemStack itemStack) {
-//        var listing = new ItemListing(pl)
+        UUID uuid = player.getUniqueId();
+        var listing = new ItemListing(player, itemStack);
+        if (!playerListings.containsKey(player.getUniqueId())) {
+            playerListings.put(player.getUniqueId(), new HashSet<>(List.of(listing)));
+            return;
+        }
+
+        var itemList = playerListings.get(uuid);
+        itemList.add(listing);
+        save();
     }
 
     public void save() {
-
+        //save async
+//        Bukkit.getScheduler().runTaskAsynchronously()
     }
 
     public void load() {
