@@ -1,6 +1,7 @@
 package com.loficostudios.marketplacePlugin.market;
 
 import com.loficostudios.marketplacePlugin.listing.ItemListing;
+import com.loficostudios.marketplacePlugin.utils.MongoDBUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;

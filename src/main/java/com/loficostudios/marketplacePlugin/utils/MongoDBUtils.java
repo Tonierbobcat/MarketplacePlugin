@@ -12,7 +12,6 @@ import org.bson.Document;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
 import java.util.logging.Level;
 
 public class MongoDBUtils {
@@ -24,7 +23,7 @@ public class MongoDBUtils {
     @Getter
     private static MongoDatabase database;
     @Getter
-    private static MongoCollection<Document> collection;
+    private static MongoCollection<Document> serverCollection;
     public static void initialize(FileConfiguration conf) {
         if (inited)
             return;
@@ -32,14 +31,23 @@ public class MongoDBUtils {
         var lgr = plugin.getLogger();
         final String path = "mongodb.";
 
-        String collection = conf.getString(path + "collection");
+        String collection = conf.getString(path + "serverCollection");
         String database = conf.getString(path + "database");
         String username = conf.getString(path + "username");
         String password = conf.getString(path + "password");
         String hostname = conf.getString(path + "hostname");
         int port = conf.getInt(path + "port");
 
-        if (isNullOrEmpty(database) || isNullOrEmpty(username) || isNullOrEmpty(password)) {
+        lgr.log(Level.INFO, "MongoDB Collection: " + collection);
+        lgr.log(Level.INFO, "MongoDB Database: " + database);
+        lgr.log(Level.INFO, "MongoDB Hostname: " + hostname);
+        lgr.log(Level.INFO, "MongoDB Port: " + port);
+
+        String pass = isNullOrEmpty(password) ? "" : "****";
+        lgr.log(Level.INFO, "MongoDB Username: " + username);
+        lgr.log(Level.INFO, "MongoDB Password: " + pass);
+
+        if (isNullOrEmpty(database)) {
             lgr.log(Level.SEVERE, "Invalid database credentials!");
             return;
         }
@@ -48,9 +56,22 @@ public class MongoDBUtils {
             return;
         }
 
-        ConnectionString connectionString = port > 0
-                ? new ConnectionString("mongodb://" + username + ":" + password + "@" + hostname + ":" + port + "/" + database)
-                : new ConnectionString("mongodb://" + username + ":" + password + "@" + hostname + "/" + database) ;
+        String usernameAndPassword = "";
+        if (!isNullOrEmpty(username)) {
+            if (!isNullOrEmpty(password)) {
+                usernameAndPassword = username + ":" + password + "@";
+            } else {
+                usernameAndPassword = username + "@";
+            }
+        }
+        var base = !isNullOrEmpty(database)
+                ? "/" + database
+                : "";
+        String string = port > 0
+                ? "mongodb://" + usernameAndPassword + hostname + ":" + port + base
+                : "mongodb://" + usernameAndPassword + hostname + base;
+        lgr.log(Level.INFO, "Connection string: " + string);
+        ConnectionString connectionString = new ConnectionString(string);
         MongoClientSettings settings = MongoClientSettings.builder()
                 .applyConnectionString(connectionString)
                 .build();
@@ -59,12 +80,14 @@ public class MongoDBUtils {
         MongoDBUtils.database = client.getDatabase(database);
 
         if (isNullOrEmpty(collection))  {
-            lgr.log(Level.SEVERE, "Invalid collection!");
+            lgr.log(Level.SEVERE, "Invalid serverCollection!");
             return;
         }
 
-        MongoDBUtils.collection = MongoDBUtils.database.getCollection(collection);
-        inited = isConnected();
+        MongoDBUtils.serverCollection = MongoDBUtils.database.getCollection(collection);
+        var connected = isConnected();
+        lgr.log(Level.INFO, "Is Connected: " + connected);
+        inited = connected;
     }
 
     private static boolean isNullOrEmpty(@Nullable String string) {
@@ -73,10 +96,13 @@ public class MongoDBUtils {
 
     @Deprecated(forRemoval = true)
     private static boolean isConnected() {
+        final MarketplacePlugin plugin = MarketplacePlugin.getInstance();
+        var lgr = plugin.getLogger();
         try {
             database.runCommand(new Document("ping", 1));
             return true;
-        } catch (Exception ignore) {
+        } catch (Exception e) {
+            lgr.log(Level.SEVERE, "Connection failed", e);
             return false;
         }
     }
