@@ -40,7 +40,7 @@ public class MarketConfig {
     }
 
     private static @NotNull String getFormattedString(String path) {
-        Component component = MiniMessage.miniMessage().deserialize(getStringElseEmpty(path));
+        Component component = MiniMessage.miniMessage().deserialize("<reset/>" + getStringElseEmpty(path));
         return LegacyComponentSerializer.legacySection().serialize(component);
     }
 

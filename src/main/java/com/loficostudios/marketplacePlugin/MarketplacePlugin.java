@@ -1,8 +1,13 @@
 package com.loficostudios.marketplacePlugin;
 
+import com.loficostudios.marketplacePlugin.command.BlackMarketCommand;
 import com.loficostudios.marketplacePlugin.command.MarketCommand;
+import com.loficostudios.marketplacePlugin.command.impl.Command;
+import com.loficostudios.marketplacePlugin.gui.MarketPageGui;
 import com.loficostudios.marketplacePlugin.gui.api.GuiManager;
 import com.loficostudios.marketplacePlugin.gui.api.listeners.GuiListener;
+import com.loficostudios.marketplacePlugin.market.BlackMarket;
+import com.loficostudios.marketplacePlugin.market.IMarket;
 import com.loficostudios.marketplacePlugin.market.Market;
 import com.loficostudios.marketplacePlugin.utils.MongoDBUtils;
 import dev.jorel.commandapi.*;
@@ -24,7 +29,10 @@ public final class MarketplacePlugin extends JavaPlugin {
     private GuiManager guiManager;
 
     @Getter
-    private Market activeMarket; //todo maybe add market manager do have multimarkets rather then just the one
+    private Market activeMarket;
+
+    @Getter
+    private BlackMarket activeBlackMarket;
 
     @Getter
     private Economy economy;
@@ -57,7 +65,10 @@ public final class MarketplacePlugin extends JavaPlugin {
             getServer().getPluginManager().disablePlugin(this);
         }
         //instantiate new market after dbutils.init
-        activeMarket = new Market(this);
+        activeMarket = (Market) new Market(this)
+                .onUpdate(market -> {
+                    MarketPageGui.getInstances().forEach(MarketPageGui::refresh);
+                });
 
         registerCommands();
         registerListeners();
@@ -70,8 +81,9 @@ public final class MarketplacePlugin extends JavaPlugin {
 
     private void registerCommands() {
         Arrays.asList(
-                new MarketCommand(activeMarket)
-        ).forEach(MarketCommand::register);
+                new MarketCommand(activeMarket),
+                new BlackMarketCommand()
+        ).forEach(Command::register);
     }
 
     public void reload() {
@@ -100,5 +112,9 @@ public final class MarketplacePlugin extends JavaPlugin {
             getLogger().log(Level.SEVERE, e.getMessage());
             getServer().getPluginManager().disablePlugin(this);
         }
+    }
+
+    public void setBlackMarket(BlackMarket market) {
+        this.activeBlackMarket = market;
     }
 }

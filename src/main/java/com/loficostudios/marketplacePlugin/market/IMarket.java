@@ -7,13 +7,26 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public interface IMarket {
-    double getPrice(OfflinePlayer buyer, OfflinePlayer seller, ItemListing listing);
-    Map<UUID, ItemListing> getListings();
-
-    ItemListing getListing(UUID uuid);
 
     ListItemResult listItem(Player player, ItemStack item, double price);
+
+    boolean removeListing(ItemListing listing);
+
     BuyItemResult buyItem(Player buyer, UUID itemUUID);
+
+    double getPrice(OfflinePlayer buyer, OfflinePlayer seller, ItemListing listing);
+
+    ItemListing getListing(UUID uuid);
+    Map<UUID, ItemListing> getListings();
+
+    IMarket onUpdate(Consumer<IMarket> onUpdate);
+
+    MarketProfile getMarketProfile(UUID uuid);
+    Map<UUID, MarketProfile> getMarketProfiles();
+    default MarketProfile getMarketProfile(OfflinePlayer player) {
+        return getMarketProfile(player.getUniqueId());
+    }
 }

@@ -13,6 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -59,7 +60,7 @@ public class MarketPageGui extends Gui {
 
     private final IMarket market;
 
-    public MarketPageGui(IMarket market, int page) {
+    public MarketPageGui(@NotNull IMarket market, int page) {
         super(53, MarketConfig.MARKET_TITLE.replace("{page}", "" + (page + 1)));
         this.pageIndex = page;
         this.market = market;

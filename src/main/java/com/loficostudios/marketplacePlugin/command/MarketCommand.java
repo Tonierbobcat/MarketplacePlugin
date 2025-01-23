@@ -27,7 +27,10 @@ public class MarketCommand implements Command {
                 .withPermission(MarketplacePlugin.NAMESPACE + ".view")
                 .executesPlayer((sender, args) -> {
 //                    Common.sendMessage(sender, new NotImplementedException("Not Implemented!").getMessage());
+
                     new MarketPageGui(MarketplacePlugin.getInstance().getActiveMarket(), 0).open(sender);
+
+
                 })
                 .then(new LiteralArgument("sell").withPermission(MarketplacePlugin.NAMESPACE + ".sell")
                         .then(new DoubleArgument("price")

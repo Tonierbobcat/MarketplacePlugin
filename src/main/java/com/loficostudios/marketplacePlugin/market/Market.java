@@ -18,12 +18,13 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("LombokGetterMayBeUsed")
-public class Market implements IMarket {
+public class Market extends AbstractMarket {
 
     public static final String SELL_PERMISSION = MarketplacePlugin.NAMESPACE + ".sell";
 
@@ -51,6 +52,7 @@ public class Market implements IMarket {
             return ListItemResult.INVALID_PRICE;
         }
         UUID playerUUID = player.getUniqueId();
+
         var listing = new ItemListing(player, new ItemStack(item), price);
 
 
@@ -67,7 +69,8 @@ public class Market implements IMarket {
                 marketProfiles.put(playerUUID, profile);
                 player.sendMessage("Added: " + listing.getItem().getType());
                 saveAsync();
-                MarketPageGui.getInstances().forEach(MarketPageGui::refresh);
+//                MarketPageGui.getInstances().forEach(MarketPageGui::refresh); //todo add to onUpdate
+                onUpdate.accept(this);
                 return ListItemResult.SUCCESS;
             } catch (Exception e) {
                 profile.remove(listing);
@@ -99,6 +102,7 @@ public class Market implements IMarket {
         return new BuyItemResult(price, listing.getItem(), BuyItemResult.Type.SUCCESS);
     }
 
+    @Override
     public boolean removeListing(ItemListing listing) {
         UUID uuid = listing.getUniqueId();
         if (!getListings().containsKey(uuid))
@@ -109,7 +113,10 @@ public class Market implements IMarket {
         if (profile.remove(listing)) {
             lgr.log(Level.INFO, "removed listing from profile");
         }
-        MarketPageGui.getInstances().forEach(MarketPageGui::refresh);
+
+        onUpdate.accept(this);
+
+//        MarketPageGui.getInstances().forEach(MarketPageGui::refresh); //todo move to onUpdate
 
         try {
             MongoDBUtils.getServerCollection()
@@ -138,6 +145,16 @@ public class Market implements IMarket {
                         Map.Entry::getValue,
                         (existing, replacement) -> replacement
                 ));
+    }
+
+    @Override
+    public MarketProfile getMarketProfile(UUID uuid) {
+        return marketProfiles.get(uuid);
+    }
+
+    @Override
+    public Map<UUID, MarketProfile> getMarketProfiles() {
+        return this.marketProfiles;
     }
 
     @Override

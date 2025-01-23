@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 public class Common {
     public static void sendMessage(Player player, String message) {
         var mm = MiniMessage.miniMessage();
-        Component component =  mm.deserialize(message);
+        Component component =  mm.deserialize("<reset/>" + message);
         ((Audience) player).sendMessage(component);
     }
 
