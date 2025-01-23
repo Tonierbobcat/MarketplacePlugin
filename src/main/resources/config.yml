@@ -1,9 +1,13 @@
+#DATABASE
 mongodb:
   database: "marketplace"
   username: "user"
   password: "passwd"
   hostname: "loficostudios.com"
   port: 27017
+
+#IN HOURS
+black-market-interval: 1
 gui:
   main:
     title: "<gradient:#343124:#654321>Marketplace [Page {page}]</gradient>"

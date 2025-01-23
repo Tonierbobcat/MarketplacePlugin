@@ -4,10 +4,12 @@ import com.loficostudios.marketplacePlugin.MarketplacePlugin;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,6 +32,23 @@ public class Common {
         } catch (IllegalArgumentException e) {
             lgr.log(Level.SEVERE, "Invalid material name!");
             return Material.BARRIER;
+        }
+    }
+
+    public static void broadcast(String message) {
+        var mm = MiniMessage.miniMessage();
+        Component component =  mm.deserialize("<reset/>" + message);
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            ((Audience) player).sendMessage(component);
+        }
+    }
+    public static void broadcast(String message, Player... excluded) {
+        var mm = MiniMessage.miniMessage();
+        Component component =  mm.deserialize("<reset/>" + message);
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (Arrays.stream(excluded).anyMatch(p -> player.getUniqueId().equals(p.getUniqueId())))
+                continue;
+            ((Audience) player).sendMessage(component);
         }
     }
 }

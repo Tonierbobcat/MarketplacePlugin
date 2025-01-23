@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.logging.Level;
@@ -40,7 +41,6 @@ public class Market extends AbstractMarket {
     public Market(MarketplacePlugin plugin) {
         this.economy = plugin.getEconomy();
         this.plugin = plugin;
-        loadAsync();
     }
 
     public ListItemResult listItem(Player player, ItemStack item, double price) {
@@ -136,14 +136,15 @@ public class Market extends AbstractMarket {
 //    }
 
     @Override
-    public Map<UUID, ItemListing> getListings() {
+    public ConcurrentHashMap<UUID, ItemListing> getListings() {
         return marketProfiles.values().stream()
                 .map(MarketProfile::getMap)
                 .flatMap(map -> map.entrySet().stream())
-                .collect(Collectors.toMap(
+                .collect(Collectors.toConcurrentMap(
                         Map.Entry::getKey,
                         Map.Entry::getValue,
-                        (existing, replacement) -> replacement
+                        (existing, replacement) -> replacement,
+                        ConcurrentHashMap::new
                 ));
     }
 
@@ -153,7 +154,7 @@ public class Market extends AbstractMarket {
     }
 
     @Override
-    public Map<UUID, MarketProfile> getMarketProfiles() {
+    public ConcurrentHashMap<UUID, MarketProfile> getMarketProfiles() {
         return this.marketProfiles;
     }
 
@@ -200,7 +201,7 @@ public class Market extends AbstractMarket {
         lgr.log(Level.INFO, "Saved market!");
     }
 
-    public void load() {
+    public boolean load() {
         Logger lgr = plugin.getLogger();
         MongoCollection<Document> collection = MongoDBUtils.getServerCollection();
         for (Document doc : collection.find()) {
@@ -223,14 +224,17 @@ public class Market extends AbstractMarket {
             lgr.log(Level.INFO, "added entry");
         }
         lgr.log(Level.INFO, "Loaded market!");
+        return true;
     }
 
-    private void saveAsync() {
+    public void saveAsync() {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, this::save);
     }
 
-    private void loadAsync() {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, this::load);
+    public CompletableFuture<Boolean> loadAsync() {
+        return CompletableFuture.supplyAsync(this::load, task ->
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, task)
+        );
     }
 
     @Override

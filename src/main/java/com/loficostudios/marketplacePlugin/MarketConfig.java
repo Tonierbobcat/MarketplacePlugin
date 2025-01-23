@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 public class MarketConfig {
+    public static int BLACK_MARKET_INTERVAL_HOURS;
     public static String MARKET_TITLE;
     public static String MARKET_NEXT_BUTTON_LABEL;
     public static String MARKET_NEXT_BUTTON_MATERIAL;
@@ -24,6 +25,10 @@ public class MarketConfig {
     public static String MARKET_CONFIRMATION_CANCEL_BUTTON_MATERIAL;
 
     public static void saveConfig() {
+        FileConfiguration config = MarketplacePlugin.getInstance().getConfig();
+
+        BLACK_MARKET_INTERVAL_HOURS = config.getInt("black-market-interval");
+
         MARKET_TITLE = getFormattedString("gui.main.title");
         MARKET_NEXT_BUTTON_LABEL = getFormattedString("gui.main.next-button.label");
         MARKET_NEXT_BUTTON_MATERIAL = getStringElseEmpty("gui.main.next-button.material");

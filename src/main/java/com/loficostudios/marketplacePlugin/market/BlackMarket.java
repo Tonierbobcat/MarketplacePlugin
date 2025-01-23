@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.joml.Random;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -22,7 +23,7 @@ public class BlackMarket extends AbstractMarket {
 
     private final Economy economy;
 
-    private final HashMap<UUID, MarketProfile> marketProfiles = new HashMap<>();
+    private final ConcurrentHashMap<UUID, MarketProfile> marketProfiles = new ConcurrentHashMap<>();
 
     public BlackMarket(IMarket base) {
         this.base = base;
@@ -61,14 +62,15 @@ public class BlackMarket extends AbstractMarket {
     }
 
     @Override
-    public Map<UUID, ItemListing> getListings() {
+    public ConcurrentHashMap<UUID, ItemListing> getListings() {
         return marketProfiles.values().stream()
                 .map(MarketProfile::getMap)
                 .flatMap(map -> map.entrySet().stream())
-                .collect(Collectors.toMap(
+                .collect(Collectors.toConcurrentMap(
                         Map.Entry::getKey,
                         Map.Entry::getValue,
-                        (existing, replacement) -> replacement
+                        (existing, replacement) -> replacement,
+                        ConcurrentHashMap::new
                 ));
     }
 
@@ -92,7 +94,7 @@ public class BlackMarket extends AbstractMarket {
     }
 
     @Override
-    public Map<UUID, MarketProfile> getMarketProfiles() {
+    public ConcurrentHashMap<UUID, MarketProfile> getMarketProfiles() {
         return marketProfiles;
     }
 

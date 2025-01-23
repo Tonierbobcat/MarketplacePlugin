@@ -33,9 +33,21 @@ public class Messages {
     public static final String MARKET_NOT_ENOUGH_TO_BUY = "Not enough money to buy this item you need {price} to buy {item}";
     @MessageField
     public static final String INVALID_ITEM = "Invalid Item!";
+    @MessageField
     public static final String INVALID_LISTING = "Invalid Listing!";
+    @MessageField
     public static final String SELLER_TRANSACTION_NOT_SUCCESSFUL = "Error occured when depositing funds to seller";
+    @MessageField
     public static final String BUYER_TRANSACTION_NOT_SUCCESSFUL = "Error occured when depositing funds to buyer" ;
+
+    @MessageField
+    public static final String BLACKMARKET_REGENERATED_CLOSING_MENU = "Closing Previous menu...";
+    @MessageField
+    public static final String BLACKMARKET_GENERATE = "Generated new blackmarket";
+    @MessageField
+    public static final String BLACKMARKET_GENERATE_BROADCAST_PLAYERS = "There is a new blackmarket. using /blackmarket to view new items";
+    @MessageField
+    public static final String BLACKMARKET_NOT_ACTIVE = "No active blackmarket!";
 
     public static void saveConfig() {
         YamlFile file = new YamlFile("messages.yml", MarketplacePlugin.getInstance());

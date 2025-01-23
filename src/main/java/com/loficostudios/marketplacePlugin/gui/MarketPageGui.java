@@ -58,6 +58,7 @@ public class MarketPageGui extends Gui {
     private final int itemsPerPage = listingSlotMap.size();
     private final int pageIndex;
 
+    @Getter
     private final IMarket market;
 
     public MarketPageGui(@NotNull IMarket market, int page) {

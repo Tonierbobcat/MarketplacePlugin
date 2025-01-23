@@ -30,7 +30,6 @@ public class GuiListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     protected void inventoryHandler(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
-        player.sendMessage("inventoryHandler fired");
         if (!(event.getInventory().getHolder() instanceof Gui)) return;
 
         event.setCancelled(true);
