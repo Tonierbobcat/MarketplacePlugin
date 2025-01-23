@@ -60,7 +60,7 @@ public class MarketPageGui extends Gui {
     private final IMarket market;
 
     public MarketPageGui(IMarket market, int page) {
-        super(53, MarketConfig.MARKET_TITLE.replace("page", "" + page));
+        super(53, MarketConfig.MARKET_TITLE.replace("{page}", "" + (page + 1)));
         this.pageIndex = page;
         this.market = market;
         displayListings(market);
@@ -94,11 +94,11 @@ public class MarketPageGui extends Gui {
         });
 
         setSlot(38, new GuiIcon(GuiUtils.getButtonItem(
-                MarketConfig.MARKET_BACK_BUTTON_LABEL.replace("{previousPage}", "" + (pageIndex - 1)),
+                MarketConfig.MARKET_BACK_BUTTON_LABEL.replace("{previousPage}", "" + ((pageIndex + 1) - 1)),
                 Common.materialFromName(MarketConfig.MARKET_BACK_BUTTON_MATERIAL)),
                 "", this::lastPage));
         setSlot(42, new GuiIcon(GuiUtils.getButtonItem(
-                MarketConfig.MARKET_NEXT_BUTTON_LABEL.replace("{nextPage}", "" + (pageIndex + 1)),
+                MarketConfig.MARKET_NEXT_BUTTON_LABEL.replace("{nextPage}", "" + ((pageIndex + 1) + 1)),
                 Common.materialFromName(MarketConfig.MARKET_NEXT_BUTTON_MATERIAL)),
                 "", this::nextPage));
     }
