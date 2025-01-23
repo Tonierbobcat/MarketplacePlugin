@@ -48,7 +48,9 @@ public class MongoDBUtils {
             return;
         }
 
-        ConnectionString connectionString = new ConnectionString("mongodb://" + username + ":" + password + "@" + hostname + ":" + port + "/" + database);
+        ConnectionString connectionString = port > 0
+                ? new ConnectionString("mongodb://" + username + ":" + password + "@" + hostname + ":" + port + "/" + database)
+                : new ConnectionString("mongodb://" + username + ":" + password + "@" + hostname + "/" + database) ;
         MongoClientSettings settings = MongoClientSettings.builder()
                 .applyConnectionString(connectionString)
                 .build();
@@ -62,11 +64,20 @@ public class MongoDBUtils {
         }
 
         MongoDBUtils.collection = MongoDBUtils.database.getCollection(collection);
-
-        inited = true;
+        inited = isConnected();
     }
 
     private static boolean isNullOrEmpty(@Nullable String string) {
         return string == null || string.isEmpty();
+    }
+
+    @Deprecated(forRemoval = true)
+    private static boolean isConnected() {
+        try {
+            database.runCommand(new Document("ping", 1));
+            return true;
+        } catch (Exception ignore) {
+            return false;
+        }
     }
 }
