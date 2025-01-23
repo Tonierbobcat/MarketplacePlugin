@@ -31,14 +31,14 @@ public class MongoDBUtils {
         var lgr = plugin.getLogger();
         final String path = "mongodb.";
 
-        String collection = conf.getString(path + "collection");
+        String collection = "market";
+
         String database = conf.getString(path + "database");
         String username = conf.getString(path + "username");
         String password = conf.getString(path + "password");
         String hostname = conf.getString(path + "hostname");
         int port = conf.getInt(path + "port");
 
-        lgr.log(Level.INFO, "MongoDB Collection: " + collection);
         lgr.log(Level.INFO, "MongoDB Database: " + database);
         lgr.log(Level.INFO, "MongoDB Hostname: " + hostname);
         lgr.log(Level.INFO, "MongoDB Port: " + port);
@@ -94,7 +94,7 @@ public class MongoDBUtils {
         return string == null || string.isEmpty();
     }
 
-    @Deprecated(forRemoval = true)
+//    @Deprecated(forRemoval = true)
     private static boolean isConnected() {
         final MarketplacePlugin plugin = MarketplacePlugin.getInstance();
         var lgr = plugin.getLogger();

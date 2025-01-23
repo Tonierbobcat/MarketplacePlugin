@@ -24,7 +24,7 @@ public class FileUtils {
 
         return fileName;
     }
-    private static String serializeString(Object object) {
+    public static String serializeString(Object object) {
         Logger lgr = MarketplacePlugin.getInstance().getLogger();
         try {
             ByteArrayOutputStream io = new ByteArrayOutputStream();
@@ -41,7 +41,7 @@ public class FileUtils {
             return null;
         }
     }
-    private static Object deserializeString(String string, Class<?> clazz) {
+    public static Object deserializeString(String string, Class<?> clazz) {
         Logger lgr = MarketplacePlugin.getInstance().getLogger();
 
         byte[] obj = Base64.getDecoder().decode(string);

@@ -1,17 +1,14 @@
 package com.loficostudios.marketplacePlugin;
 
-import com.loficostudios.marketplacePlugin.command.SellCommand;
+import com.loficostudios.marketplacePlugin.command.MarketCommand;
 import com.loficostudios.marketplacePlugin.market.Market;
 import com.loficostudios.marketplacePlugin.utils.MongoDBUtils;
 import dev.jorel.commandapi.*;
 import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.processing.Generated;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.logging.Level;
 
 public final class MarketplacePlugin extends JavaPlugin {
@@ -64,8 +61,8 @@ public final class MarketplacePlugin extends JavaPlugin {
 
     private void registerCommands() {
         Arrays.asList(
-                new SellCommand(activeMarket)
-        ).forEach(SellCommand::register);
+                new MarketCommand(activeMarket)
+        ).forEach(MarketCommand::register);
     }
 
     public void reload() {
