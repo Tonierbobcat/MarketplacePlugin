@@ -21,6 +21,10 @@ public final class MarketplacePlugin extends JavaPlugin {
     @Getter
     private Economy economy;
 
+    public MarketplacePlugin() {
+        instance = this;
+    }
+
     @Override
     public void onLoad() {
         var conf = new CommandAPIBukkitConfig(this);

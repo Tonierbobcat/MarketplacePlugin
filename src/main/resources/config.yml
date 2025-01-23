@@ -1,4 +1,5 @@
 mongodb:
+  collection: "market"
   database: "marketplace"
   username: "user"
   password: "passwd"
