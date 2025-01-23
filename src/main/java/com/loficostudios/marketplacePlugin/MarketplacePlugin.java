@@ -1,11 +1,14 @@
 package com.loficostudios.marketplacePlugin;
 
 import com.loficostudios.marketplacePlugin.command.MarketCommand;
+import com.loficostudios.marketplacePlugin.gui.api.GuiManager;
+import com.loficostudios.marketplacePlugin.gui.api.listeners.GuiListener;
 import com.loficostudios.marketplacePlugin.market.Market;
 import com.loficostudios.marketplacePlugin.utils.MongoDBUtils;
 import dev.jorel.commandapi.*;
 import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Arrays;
@@ -16,6 +19,9 @@ public final class MarketplacePlugin extends JavaPlugin {
     public static final String NAMESPACE = "marketplace";
     @Getter
     private static MarketplacePlugin instance;
+
+    @Getter
+    private GuiManager guiManager;
 
     @Getter
     private Market activeMarket; //todo maybe add market manager do have multimarkets rather then just the one
@@ -42,13 +48,15 @@ public final class MarketplacePlugin extends JavaPlugin {
         Messages.saveConfig();
         setupEconomy();
 
+        guiManager = new GuiManager();
+
         MongoDBUtils.initialize(this.getConfig());
         if (!MongoDBUtils.isInited()) {
             getLogger().log(Level.SEVERE, "Failed initialize database");
             getServer().getPluginManager().disablePlugin(this);
         }
         //instantiate new market after dbutils.init
-        activeMarket = new Market();
+        activeMarket = new Market(this);
 
         registerCommands();
         registerListeners();
@@ -69,7 +77,9 @@ public final class MarketplacePlugin extends JavaPlugin {
     }
 
     private void registerListeners() {
-
+        Arrays.asList(
+                new GuiListener(guiManager)
+        ).forEach(listener -> Bukkit.getPluginManager().registerEvents(listener, this));
     }
 
     private void setupEconomy() {

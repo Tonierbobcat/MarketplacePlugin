@@ -7,9 +7,10 @@ import org.bukkit.OfflinePlayer;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MarketProfile {
-    private final HashMap<UUID, ItemListing> listings = new HashMap<>();
+    private final ConcurrentHashMap<UUID, ItemListing> listings = new ConcurrentHashMap<>();
 
     @Getter
     private final UUID playerUUID;

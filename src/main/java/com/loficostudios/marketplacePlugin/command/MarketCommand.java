@@ -3,6 +3,8 @@ package com.loficostudios.marketplacePlugin.command;
 import com.loficostudios.marketplacePlugin.MarketplacePlugin;
 import com.loficostudios.marketplacePlugin.Messages;
 import com.loficostudios.marketplacePlugin.command.impl.Command;
+import com.loficostudios.marketplacePlugin.gui.api.MarketPageGui;
+import com.loficostudios.marketplacePlugin.market.ListItemResult;
 import com.loficostudios.marketplacePlugin.market.Market;
 import com.loficostudios.marketplacePlugin.utils.Common;
 import dev.jorel.commandapi.CommandAPICommand;
@@ -25,7 +27,8 @@ public class MarketCommand implements Command {
     public void register() {
         new CommandTree("marketplace")
                 .executesPlayer((sender, args) -> {
-                    Common.sendMessage(sender, new NotImplementedException("Not Implemented!").getMessage());
+//                    Common.sendMessage(sender, new NotImplementedException("Not Implemented!").getMessage());
+                    new MarketPageGui(MarketplacePlugin.getInstance(), 0).open(sender);
                 })
                 .then(new LiteralArgument("sell").withPermission(MarketplacePlugin.NAMESPACE + ".sell")
                         .then(new DoubleArgument("price")
@@ -47,8 +50,13 @@ public class MarketCommand implements Command {
 
         String itemName = meta != null ? meta.getDisplayName() : item.getType().name();
 
+        if (ListItemResult.isSuccess(result))
+            item.setAmount(0);
+
         Common.sendMessage(player, result.getMessage()
                 .replace("{price}", "" + price)
                 .replace("{item}", itemName));
+
+
     }
 }

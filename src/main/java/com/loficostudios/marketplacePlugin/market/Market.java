@@ -9,70 +9,102 @@ import com.mongodb.client.model.ReplaceOptions;
 import lombok.Getter;
 import org.bson.Document;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static com.loficostudios.marketplacePlugin.market.BuyItemResult.Type.*;
 
 @SuppressWarnings("LombokGetterMayBeUsed")
 public class Market {
 
     public static final String SELL_PERMISSION = MarketplacePlugin.NAMESPACE + ".sell";
 
+    private final MarketplacePlugin plugin;
+
+    private final ConcurrentHashMap<UUID, MarketProfile> marketProfiles = new ConcurrentHashMap<>();
+
+    private final ConcurrentHashMap<UUID, ItemListing> allListing = new ConcurrentHashMap<>();
+
     @Getter
     private BlackMarket blackMarket;
 
-    public Market() {
-        load();
+    public Market(MarketplacePlugin plugin) {
+        this.plugin = plugin;
+        loadAsync();
     }
-
-    private final Map<UUID, MarketProfile> marketProfiles = new HashMap<>();
-    private final HashMap<UUID, ItemListing> allListing = new HashMap<>();
 
     public ListItemResult listItem(Player player, ItemStack itemStack, double price) {
         if (!player.isOp() && !player.hasPermission(SELL_PERMISSION))
             return ListItemResult.NO_PERMISSION;
+        if (itemStack == null || itemStack.getType() == Material.AIR)
+            return ListItemResult.INVALID_ITEM;
         if (price <= 0) {
             return ListItemResult.INVALID_PRICE;
         }
         UUID playerUUID = player.getUniqueId();
         var listing = new ItemListing(player, itemStack, price);
+
+
         if (!marketProfiles.containsKey(player.getUniqueId())) {
             marketProfiles.computeIfAbsent(playerUUID, k -> new MarketProfile(player))
                     .add(listing);
             saveAsync();
             return ListItemResult.SUCCESS_NEW;
         }
-
-        var profile = marketProfiles.get(playerUUID);
-
-        profile.add(listing);
-        try {
-            marketProfiles.put(playerUUID, profile);
-            saveAsync();
-            return ListItemResult.SUCCESS;
-        } catch (Exception e) {
-            return ListItemResult.FAILURE;
-        }
-    }
-
-    public void buyItem(Player player, UUID itemUUID) {
-        var listing = getListing(itemUUID);
-        if (MarketplacePlugin.getInstance().getEconomy().withdrawPlayer(player, listing.getPrice()).transactionSuccess()) {
-            if (removeListing(listing)) {
-                player.getInventory().addItem(listing.getItem());
+        else {
+            var profile = marketProfiles.get(playerUUID);
+            try {
+                profile.add(listing);
+                marketProfiles.put(playerUUID, profile);
+                allListing.put(listing.getUniqueId(), listing);
+                player.sendMessage("Added: " + listing.getItem().getType());
+                saveAsync();
+                return ListItemResult.SUCCESS;
+            } catch (Exception e) {
+                profile.remove(listing);
+                marketProfiles.remove(playerUUID, profile);
+                allListing.remove(listing.getUniqueId(), listing);
+                return ListItemResult.FAILURE;
             }
         }
     }
 
+    public BuyItemResult buyItem(Player player, UUID itemUUID) {
+        var listing = getListing(itemUUID);
+        double price = listing.getPrice();
+        if (!MarketplacePlugin.getInstance().getEconomy().withdrawPlayer(player, price).transactionSuccess())
+            return new BuyItemResult(0, null, NOT_ENOUGHT_MONEY);
+
+        if (!removeListing(listing))
+            return new BuyItemResult(0, null, FAILURE);
+
+        player.getInventory().addItem(listing.getItem());
+        return new BuyItemResult(price, listing.getItem(), SUCCESS);
+    }
+
     public boolean removeListing(ItemListing listing) {
-        if (!allListing.containsKey(listing.getUniqueId()))
+        UUID uuid = listing.getUniqueId();
+        if (!allListing.containsKey(uuid))
             return false;
         var profile = marketProfiles.get(listing.getSellerUUID());
-        return profile.remove(listing);
+        var lgr = plugin.getLogger();
+
+        if (profile.remove(listing)) {
+            lgr.log(Level.INFO, "removed listing from profile");
+        }
+        if (allListing.remove(uuid, listing)) {
+            lgr.log(Level.INFO, "removed listing from all map");
+        }
+
+        saveAsync();
+        return true;
     }
 
     public Collection<ItemListing> getListings(Player player) {
@@ -95,16 +127,11 @@ public class Market {
         return (ItemStack) FileUtils.deserializeString(string, ItemStack.class);
     }
 
-    private void saveAsync() {
-        Bukkit.getScheduler().runTaskAsynchronously(MarketplacePlugin.getInstance(), this::save);
-    }
-
     private void save() {
-        Logger lgr = MarketplacePlugin.getInstance().getLogger();
+        Logger lgr = plugin.getLogger();
         MongoCollection<Document> collection = MongoDBUtils.getServerCollection();
 
         for (Map.Entry<UUID, MarketProfile> profile : marketProfiles.entrySet()) {
-            MarketplacePlugin.getInstance().getServer().broadcastMessage("Found entry");
             for (ItemListing listing : profile.getValue().getAll()) { //TODO change this to player profile
                 Document doc = new Document()
                         .append("uuid", listing.getUniqueId().toString())
@@ -123,7 +150,7 @@ public class Market {
     }
 
     public void load() {
-        Logger lgr = MarketplacePlugin.getInstance().getLogger();
+        Logger lgr = plugin.getLogger();
         MongoCollection<Document> collection = MongoDBUtils.getServerCollection();
         for (Document doc : collection.find()) {
             String s = doc.getString("uuid");
@@ -148,4 +175,11 @@ public class Market {
         lgr.log(Level.INFO, "Loaded market!");
     }
 
+    private void saveAsync() {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, this::save);
+    }
+
+    private void loadAsync() {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, this::load);
+    }
 }
