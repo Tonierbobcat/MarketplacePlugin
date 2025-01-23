@@ -18,16 +18,22 @@ public class ItemListing {
     @Getter
     private final UUID sellerUUID;
 
-    public ItemListing(OfflinePlayer seller, UUID uuid, ItemStack item) {
+
+    @Getter
+    private final double price;
+
+    public ItemListing(OfflinePlayer seller, UUID uuid, ItemStack item, double price) {
         this.sellerUUID = seller.getUniqueId();
         this.itemUUID = uuid;
         this.item = item;
+        this.price = price;
     }
 
-    public ItemListing(OfflinePlayer seller, ItemStack item) {
+    public ItemListing(OfflinePlayer seller, ItemStack item, double price) {
         this.sellerUUID = seller.getUniqueId();
         this.itemUUID = UUID.randomUUID();
         this.item = item;
+        this.price = price;
     }
 
     public @NotNull OfflinePlayer getSeller() {

@@ -1,5 +1,7 @@
 package com.loficostudios.marketplacePlugin;
 
+import com.loficostudios.marketplacePlugin.command.SellCommand;
+import com.loficostudios.marketplacePlugin.market.Market;
 import com.loficostudios.marketplacePlugin.utils.MongoDBUtils;
 import dev.jorel.commandapi.*;
 import lombok.Getter;
@@ -14,9 +16,12 @@ import java.util.logging.Level;
 
 public final class MarketplacePlugin extends JavaPlugin {
     private static final String VAULT_NOT_INSTALLED = "Vault is not installed!";
-    private static final String NAMESPACE = "market";
+    public static final String NAMESPACE = "marketplace";
     @Getter
     private static MarketplacePlugin instance;
+
+    @Getter
+    private Market activeMarket; //todo maybe add market manager do have multimarkets rather then just the one
 
     @Getter
     private Economy economy;
@@ -37,13 +42,16 @@ public final class MarketplacePlugin extends JavaPlugin {
         CommandAPI.onEnable();
 
         saveDefaultConfig();
-
+        Messages.saveConfig();
         setupEconomy();
+
         MongoDBUtils.initialize(this.getConfig());
         if (!MongoDBUtils.isInited()) {
             getLogger().log(Level.SEVERE, "Failed initialize database");
             getServer().getPluginManager().disablePlugin(this);
         }
+        //instantiate new market after dbutils.init
+        activeMarket = new Market();
 
         registerCommands();
         registerListeners();
@@ -55,6 +63,9 @@ public final class MarketplacePlugin extends JavaPlugin {
     }
 
     private void registerCommands() {
+        Arrays.asList(
+                new SellCommand(activeMarket)
+        ).forEach(SellCommand::register);
     }
 
     public void reload() {

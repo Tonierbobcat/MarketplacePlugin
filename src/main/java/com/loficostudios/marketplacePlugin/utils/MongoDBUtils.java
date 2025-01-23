@@ -31,7 +31,7 @@ public class MongoDBUtils {
         var lgr = plugin.getLogger();
         final String path = "mongodb.";
 
-        String collection = conf.getString(path + "serverCollection");
+        String collection = conf.getString(path + "collection");
         String database = conf.getString(path + "database");
         String username = conf.getString(path + "username");
         String password = conf.getString(path + "password");
