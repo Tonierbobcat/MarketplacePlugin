@@ -1,13 +1,14 @@
 package com.loficostudios.marketplacePlugin.market;
 
 import com.loficostudios.marketplacePlugin.MarketplacePlugin;
-import com.loficostudios.marketplacePlugin.gui.api.MarketPageGui;
+import com.loficostudios.marketplacePlugin.gui.MarketPageGui;
 import com.loficostudios.marketplacePlugin.listing.ItemListing;
 import com.loficostudios.marketplacePlugin.utils.FileUtils;
 import com.loficostudios.marketplacePlugin.utils.MongoDBUtils;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.ReplaceOptions;
 import lombok.Getter;
+import net.milkbowl.vault.economy.Economy;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -33,7 +34,10 @@ public class Market implements IMarket {
     @Getter
     private BlackMarket blackMarket;
 
+    private final Economy economy;
+
     public Market(MarketplacePlugin plugin) {
+        this.economy = plugin.getEconomy();
         this.plugin = plugin;
         loadAsync();
     }
@@ -73,6 +77,7 @@ public class Market implements IMarket {
         }
     }
 
+    @Override
     public BuyItemResult buyItem(Player buyer, UUID itemUUID) {
         var listing = getListing(itemUUID);
         if (listing == null) {
@@ -81,13 +86,13 @@ public class Market implements IMarket {
         var seller = listing.getSeller();
         double price = getPrice(buyer, seller, listing);
 
-        if (!MarketplacePlugin.getInstance().getEconomy().has(buyer, price))
+        if (!economy.has(buyer, price))
             return new BuyItemResult(0, null, BuyItemResult.Type.NOT_ENOUGHT_MONEY);
         if (!removeListing(listing))
             return new BuyItemResult(0, null, BuyItemResult.Type.FAILURE);
-        if (!plugin.getEconomy().depositPlayer(seller, listing.getPrice()).transactionSuccess())
+        if (!economy.depositPlayer(seller, listing.getPrice()).transactionSuccess())
             return new BuyItemResult(0, null, BuyItemResult.Type.SELLER_TRANSACTION_FAILURE);
-        if (!plugin.getEconomy().withdrawPlayer(buyer, price).transactionSuccess())
+        if (!economy.withdrawPlayer(buyer, price).transactionSuccess())
             return new BuyItemResult(0, null, BuyItemResult.Type.BUYER_TRANSACTION_FAILURE);
 
         buyer.getInventory().addItem(listing.getItem());
@@ -119,10 +124,11 @@ public class Market implements IMarket {
         return true;
     }
 
-    public Collection<ItemListing> getListings(Player player) {
-        return marketProfiles.getOrDefault(player.getUniqueId(), new MarketProfile(player)).getAll();
-    }
+//    public Collection<ItemListing> getListings(Player player) {
+//        return marketProfiles.getOrDefault(player.getUniqueId(), new MarketProfile(player)).getAll();
+//    }
 
+    @Override
     public Map<UUID, ItemListing> getListings() {
         return marketProfiles.values().stream()
                 .map(MarketProfile::getMap)
@@ -134,6 +140,7 @@ public class Market implements IMarket {
                 ));
     }
 
+    @Override
     public ItemListing getListing(UUID uuid) {
         // The reason why I am not just calling getListings().get is because I want to minimize overhead
         return marketProfiles.values().stream()

@@ -4,3 +4,23 @@ mongodb:
   password: "passwd"
   hostname: "loficostudios.com"
   port: 27017
+gui:
+  main:
+    title: "Marketplace [Page {page} ]"
+    next-button:
+      label: "Go to page {nextPage}"
+      material: RED_WOOL
+    back-button:
+      label: "Go to page {previousPage}"
+      material: GREEN_WOOL
+    listing:
+      price: "Price: {price}"
+      player: "Seller: {player}"
+  confirmation:
+    title: "Confirmation"
+    confirm-button:
+      label: "Confirm"
+      material: GREEN_WOOL
+    cancel-button:
+      label: "Cancel"
+      material: RED_WOOL

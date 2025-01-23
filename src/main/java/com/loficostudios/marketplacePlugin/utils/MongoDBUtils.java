@@ -14,6 +14,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.logging.Level;
 
+import static com.loficostudios.marketplacePlugin.utils.Common.isNullOrEmpty;
+
 public class MongoDBUtils {
 
     @Getter
@@ -90,9 +92,6 @@ public class MongoDBUtils {
         inited = connected;
     }
 
-    private static boolean isNullOrEmpty(@Nullable String string) {
-        return string == null || string.isEmpty();
-    }
 
 //    @Deprecated(forRemoval = true)
     private static boolean isConnected() {

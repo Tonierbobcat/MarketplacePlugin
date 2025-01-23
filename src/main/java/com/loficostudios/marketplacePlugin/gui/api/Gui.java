@@ -19,10 +19,10 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.logging.Level;
+
+import static com.loficostudios.marketplacePlugin.utils.Common.isNullOrEmpty;
 
 public abstract class Gui implements InventoryHolder {
 
@@ -30,9 +30,10 @@ public abstract class Gui implements InventoryHolder {
 
 
     private final MarketplacePlugin plugin = MarketplacePlugin.getInstance();
+
     private final GuiManager guiManager = plugin.getGuiManager();
 
-    private Inventory gui;
+    private final Inventory gui;
 
     @NotNull
     @Override
@@ -40,46 +41,39 @@ public abstract class Gui implements InventoryHolder {
         return this.gui;
     }
 
-    //@Getter
-    //private int size;
-
-    protected abstract @NotNull Integer getSize();
-
-    protected abstract @Nullable String getTitle();
-
     @Getter
     private Map<Integer, GuiIcon> icons = new HashMap<>();
 
     public void refresh() {
     }
 
-    private void create() {
-        String title = getTitle();
-        int size = validateSize(getSize());
-
-        /*try {
-            size = validateSize(getSize());
-        } catch (Exception e) {
-            String pluginName = "[" + plugin.getName() + "]";
-            String msg = pluginName + " Error Validating Size: " + Arrays.toString(e.getStackTrace());
-            Bukkit.getLogger().log(Level.SEVERE, msg);
-
-            size = 9;
-
-        }*/
-
-        this.gui = plugin.getServer().createInventory(this,
-                size,
-                ColorUtils.deserialize(title != null && !title.isEmpty() ? title : DEFAULT_MENU_TITLE));
-
-
-
+    protected void createIcons(Inventory inventory) {
         this.icons.forEach((slot, icon) -> {
-
-            //Bukkit.getLogger().log(Level.SEVERE, "setting slot " + slot);
-
-            this.gui.setItem(slot, icon.getItem());
+            inventory.setItem(slot, icon.getItem());
+            plugin.getLogger().log(Level.INFO, "created icon. material: " + icon.getItem().getType());
         });
+    }
+
+    @Getter
+    private final int size;
+
+    @Getter
+    private String title;
+
+    public Gui(int size, String title) {
+        this.size = validateSize(size);
+        this.title = title;
+        this.gui = plugin.getServer().createInventory(this,
+                this.size,
+                ColorUtils.deserialize(!isNullOrEmpty(title) ? title : DEFAULT_MENU_TITLE));
+    }
+
+    public Gui(int size) {
+        this.size = validateSize(size);
+        this.title = DEFAULT_MENU_TITLE;
+        this.gui = plugin.getServer().createInventory(this,
+                this.size,
+                ColorUtils.deserialize(this.title));
     }
 
     public final void fill(@NotNull GuiIcon icon, int start, int end, Boolean replaceExisting) {
@@ -89,49 +83,33 @@ public abstract class Gui implements InventoryHolder {
                 continue; // Skip this iteration if replaceExisting is false and key exists
             }
 
-            this.icons.put(i, icon);
+            setSlot(i, icon);
         }
     }
 
     public void open(@NotNull Player player) {
-        create();
-
+//        this.gui = create();
         plugin.getGuiManager().setGui(player, this);
         player.openInventory(this.gui);
     }
 
     protected void clear() {
-        if (icons.isEmpty())
-            return;
+        if (icons.isEmpty()) return;
+
         icons.forEach((index, icon) -> {
             this.getInventory().setItem(index, new ItemStack(Material.AIR));
         });
+
+        icons.clear();
     }
 
     public void close(@NotNull Player player) {
         player.closeInventory();
     }
 
-//    public void refreshGui(@NotNull Player player, @NotNull Gui gui) {
-//        gui.open(player);
-//    }
-
     public void setSlot(@NotNull Integer slot, @NotNull GuiIcon icon) {
-
-        /*if ()
-
-        try {
-            this.gui.setItem(slot, icon.getItem());
-        } catch (Exception e) {
-            String pluginName = "[" + plugin.getName() + "]";
-            String msg = pluginName + " Error adding icon to gui GUICON_ID: " + icon.getId() + " " + e.getMessage();
-            Bukkit.getLogger().log(Level.SEVERE, msg);
-            return;
-        }*/
-
-
-
         this.icons.put(slot, icon);
+        this.gui.setItem(slot, icon.getItem());
     }
 
     public GuiIcon getIcon(@NotNull Integer slot) {
@@ -148,6 +126,8 @@ public abstract class Gui implements InventoryHolder {
                 .min(Integer::compareTo)
                 .orElse(9);
     }
+
+
 }
 
 

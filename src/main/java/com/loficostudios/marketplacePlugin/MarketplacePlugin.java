@@ -45,6 +45,7 @@ public final class MarketplacePlugin extends JavaPlugin {
         CommandAPI.onEnable();
 
         saveDefaultConfig();
+        MarketConfig.saveConfig();
         Messages.saveConfig();
         setupEconomy();
 

@@ -3,15 +3,13 @@ package com.loficostudios.marketplacePlugin.command;
 import com.loficostudios.marketplacePlugin.MarketplacePlugin;
 import com.loficostudios.marketplacePlugin.Messages;
 import com.loficostudios.marketplacePlugin.command.impl.Command;
-import com.loficostudios.marketplacePlugin.gui.api.MarketPageGui;
+import com.loficostudios.marketplacePlugin.gui.MarketPageGui;
 import com.loficostudios.marketplacePlugin.market.ListItemResult;
 import com.loficostudios.marketplacePlugin.market.Market;
 import com.loficostudios.marketplacePlugin.utils.Common;
-import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.CommandTree;
 import dev.jorel.commandapi.arguments.DoubleArgument;
 import dev.jorel.commandapi.arguments.LiteralArgument;
-import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -26,9 +24,10 @@ public class MarketCommand implements Command {
     @Override
     public void register() {
         new CommandTree("marketplace")
+                .withPermission(MarketplacePlugin.NAMESPACE + ".view")
                 .executesPlayer((sender, args) -> {
 //                    Common.sendMessage(sender, new NotImplementedException("Not Implemented!").getMessage());
-                    new MarketPageGui(MarketplacePlugin.getInstance(), 0).open(sender);
+                    new MarketPageGui(MarketplacePlugin.getInstance().getActiveMarket(), 0).open(sender);
                 })
                 .then(new LiteralArgument("sell").withPermission(MarketplacePlugin.NAMESPACE + ".sell")
                         .then(new DoubleArgument("price")

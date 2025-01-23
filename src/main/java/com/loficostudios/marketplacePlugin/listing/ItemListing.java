@@ -1,6 +1,6 @@
 package com.loficostudios.marketplacePlugin.listing;
 
-import com.loficostudios.marketplacePlugin.MarketplacePlugin;
+import com.loficostudios.marketplacePlugin.MarketConfig;
 import com.loficostudios.marketplacePlugin.gui.api.GuiIcon;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -11,9 +11,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.BiConsumer;
 
 public class ItemListing {
@@ -34,7 +32,7 @@ public class ItemListing {
         this.uniqueId = uuid;
         this.item = item;
         this.price = price;
-        MarketplacePlugin.getInstance().getServer().broadcastMessage("(ItemListing::new) UUID: " + this.uniqueId + ". Material: " + item.getType());
+//        MarketplacePlugin.getInstance().getServer().broadcastMessage("(ItemListing::new) UUID: " + this.uniqueId + ". Material: " + item.getType());
     }
 
     public ItemListing(OfflinePlayer seller, ItemStack item, double price) {
@@ -42,38 +40,43 @@ public class ItemListing {
         this.uniqueId = UUID.randomUUID();
         this.item = item;
         this.price = price;
-        MarketplacePlugin.getInstance().getServer().broadcastMessage("(ItemListing::new) UUID: " + this.uniqueId + ". Material: " + item.getType());
+//        MarketplacePlugin.getInstance().getServer().broadcastMessage("(ItemListing::new) UUID: " + this.uniqueId + ". Material: " + item.getType());
     }
 
     public @NotNull OfflinePlayer getSeller() {
         return Bukkit.getOfflinePlayer(sellerUUID);
     }
 
+
     public GuiIcon getGuiIcon(@Nullable BiConsumer<Player, GuiIcon> onClick) {
         var newItem = new ItemStack(this.item);
         var meta = newItem.getItemMeta();
+        OfflinePlayer seller = getSeller();
+        String name = Objects.requireNonNullElse(seller.getName(), "" + seller.getUniqueId());
         if (meta != null) {
-            var lore = meta.getLore();
-            if (lore == null) {
-                lore = Arrays.asList(
-                    "Price: " + price,
-                    "Seller: " + getSeller().getName()
-                );
-            }
-            else {
-                lore.addFirst("Price: " + price);
-                lore.addFirst("Seller: " + getSeller().getName());
-            }
-
+            var lore = getDescription(meta, name);
             meta.setLore(lore);
         }
         newItem.setItemMeta(meta);
 
         var icon = new GuiIcon(newItem, this.uniqueId.toString(), onClick);
 
-        MarketplacePlugin.getInstance().getServer().broadcastMessage("(ItemListing#getIcon) GUI Icon for listing " + this.uniqueId + ". Material: " + icon.getItem().getType() + " Original Material: " + item.getType());
-
         return icon;
 
+    }
+
+    private @NotNull List<String> getDescription(ItemMeta meta, String name) {
+        var lore = meta.getLore();
+        if (lore == null) {
+            lore = Arrays.asList(
+                    MarketConfig.MARKET_LISTING_PRICE.replace("{price}", "" + price),
+                    MarketConfig.MARKET_LISTING_PLAYER.replace("{player}", name)
+            );
+        }
+        else {
+            lore.addFirst(MarketConfig.MARKET_LISTING_PRICE.replace("{price}", "" + price));
+            lore.addFirst(MarketConfig.MARKET_LISTING_PLAYER.replace("{player}", name));
+        }
+        return lore;
     }
 }
