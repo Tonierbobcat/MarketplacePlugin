@@ -11,9 +11,11 @@ package com.loficostudios.marketplacePlugin.gui.api;
 import com.loficostudios.marketplacePlugin.MarketplacePlugin;
 import com.loficostudios.marketplacePlugin.utils.ColorUtils;
 import lombok.Getter;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -93,6 +95,14 @@ public abstract class Gui implements InventoryHolder {
 
         plugin.getGuiManager().setGui(player, this);
         player.openInventory(this.gui);
+    }
+
+    protected void clear() {
+        if (icons.isEmpty())
+            return;
+        icons.forEach((index, icon) -> {
+            this.getInventory().setItem(index, new ItemStack(Material.AIR));
+        });
     }
 
     public void close(@NotNull Player player) {

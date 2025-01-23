@@ -44,7 +44,7 @@ public class MarketCommand implements Command {
     }
 
     private void sell(Player player, ItemStack item, double price) {
-        var result = market.listItem(player, item, price);
+        var result = market.listItem(player, new ItemStack(item), price);
 
         var meta = item.getItemMeta();
 

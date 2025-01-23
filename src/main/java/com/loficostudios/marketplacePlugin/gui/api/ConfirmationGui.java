@@ -33,6 +33,8 @@ public class ConfirmationGui extends Gui {
 
     }
 
+
+
     private ItemStack getButtonItem(String name, Material type) {
         var item = new ItemStack(type);
         var meta = item.getItemMeta();
@@ -60,6 +62,7 @@ public class ConfirmationGui extends Gui {
                 .replace("{item}", itemName != null ? itemName : "null")
                 .replace("{price}", "" + result.price()));
         close(player);
+        lastPage.open(player);
     }
 
     private void cancel(Player player, GuiIcon icon) {

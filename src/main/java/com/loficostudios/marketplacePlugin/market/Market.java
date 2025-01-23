@@ -1,6 +1,7 @@
 package com.loficostudios.marketplacePlugin.market;
 
 import com.loficostudios.marketplacePlugin.MarketplacePlugin;
+import com.loficostudios.marketplacePlugin.gui.api.MarketPageGui;
 import com.loficostudios.marketplacePlugin.listing.ItemListing;
 import com.loficostudios.marketplacePlugin.utils.FileUtils;
 import com.loficostudios.marketplacePlugin.utils.MongoDBUtils;
@@ -18,6 +19,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import static com.loficostudios.marketplacePlugin.market.BuyItemResult.Type.*;
 
@@ -30,8 +32,6 @@ public class Market {
 
     private final ConcurrentHashMap<UUID, MarketProfile> marketProfiles = new ConcurrentHashMap<>();
 
-    private final ConcurrentHashMap<UUID, ItemListing> allListing = new ConcurrentHashMap<>();
-
     @Getter
     private BlackMarket blackMarket;
 
@@ -40,16 +40,16 @@ public class Market {
         loadAsync();
     }
 
-    public ListItemResult listItem(Player player, ItemStack itemStack, double price) {
+    public ListItemResult listItem(Player player, ItemStack item, double price) {
         if (!player.isOp() && !player.hasPermission(SELL_PERMISSION))
             return ListItemResult.NO_PERMISSION;
-        if (itemStack == null || itemStack.getType() == Material.AIR)
+        if (item == null || item.getType() == Material.AIR)
             return ListItemResult.INVALID_ITEM;
         if (price <= 0) {
             return ListItemResult.INVALID_PRICE;
         }
         UUID playerUUID = player.getUniqueId();
-        var listing = new ItemListing(player, itemStack, price);
+        var listing = new ItemListing(player, new ItemStack(item), price);
 
 
         if (!marketProfiles.containsKey(player.getUniqueId())) {
@@ -63,14 +63,13 @@ public class Market {
             try {
                 profile.add(listing);
                 marketProfiles.put(playerUUID, profile);
-                allListing.put(listing.getUniqueId(), listing);
                 player.sendMessage("Added: " + listing.getItem().getType());
                 saveAsync();
+                MarketPageGui.getInstances().forEach(MarketPageGui::refresh);
                 return ListItemResult.SUCCESS;
             } catch (Exception e) {
                 profile.remove(listing);
                 marketProfiles.remove(playerUUID, profile);
-                allListing.remove(listing.getUniqueId(), listing);
                 return ListItemResult.FAILURE;
             }
         }
@@ -91,7 +90,7 @@ public class Market {
 
     public boolean removeListing(ItemListing listing) {
         UUID uuid = listing.getUniqueId();
-        if (!allListing.containsKey(uuid))
+        if (!getListings().containsKey(uuid))
             return false;
         var profile = marketProfiles.get(listing.getSellerUUID());
         var lgr = plugin.getLogger();
@@ -99,8 +98,15 @@ public class Market {
         if (profile.remove(listing)) {
             lgr.log(Level.INFO, "removed listing from profile");
         }
-        if (allListing.remove(uuid, listing)) {
-            lgr.log(Level.INFO, "removed listing from all map");
+        MarketPageGui.getInstances().forEach(MarketPageGui::refresh);
+
+        try {
+            MongoDBUtils.getServerCollection()
+                    .deleteOne(new Document("uuid", uuid.toString()));
+            lgr.log(Level.INFO, "removed listing from database");
+        } catch (Exception e) {
+            lgr.log(Level.SEVERE, "failed to remove listing from database", e);
+            return false;
         }
 
         saveAsync();
@@ -111,12 +117,27 @@ public class Market {
         return marketProfiles.getOrDefault(player.getUniqueId(), new MarketProfile(player)).getAll();
     }
 
-    public Collection<ItemListing> getListings() {
-        return allListing.values();
+    public Map<UUID, ItemListing> getListings() {
+        return marketProfiles.values().stream()
+                .map(MarketProfile::getMap)
+                .flatMap(map -> map.entrySet().stream())
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (existing, replacement) -> replacement
+                ));
     }
 
     public ItemListing getListing(UUID uuid) {
-        return allListing.get(uuid);
+        // The reason why I am not just calling getListings().get is because I want to minimize overhead
+        return marketProfiles.values().stream()
+                .map(MarketProfile::getMap)
+                .flatMap(map -> map.entrySet().stream())
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (existing, replacement) -> replacement
+                )).get(uuid);
     }
 
     private String saveItem(ItemStack item) {
@@ -169,7 +190,6 @@ public class Market {
             marketProfiles
                     .computeIfAbsent(sellerUUID, k -> new MarketProfile(player))
                     .add(listing);
-            allListing.put(uuid, listing);
             lgr.log(Level.INFO, "added entry");
         }
         lgr.log(Level.INFO, "Loaded market!");

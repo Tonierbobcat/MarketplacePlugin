@@ -3,22 +3,35 @@ package com.loficostudios.marketplacePlugin.gui.api;
 import com.loficostudios.marketplacePlugin.MarketplacePlugin;
 import com.loficostudios.marketplacePlugin.listing.ItemListing;
 import com.loficostudios.marketplacePlugin.market.Market;
-import com.loficostudios.marketplacePlugin.utils.Common;
+import lombok.Getter;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class MarketPageGui extends Gui {
+    @Getter
+    private static List<MarketPageGui> instances = new ArrayList<>();
+
     private static final int itemsPerPage = 20;
     private Market market;
-    private final int size;
+    private int size;
+    private final int page;
     public MarketPageGui(MarketplacePlugin plugin, int page) {
         this.market = plugin.getActiveMarket();
-        var listings = market.getListings();
+        this.page = page;
+        displayListings(market);
+        instances.add(this);
+    }
+
+
+
+    private void displayListings(Market market) {
+        clear();
+        var listings = market.getListings().values().stream().toList();
 
         int start = page * itemsPerPage;
         int end = Math.min(start + itemsPerPage, listings.size());
@@ -35,6 +48,10 @@ public class MarketPageGui extends Gui {
             setSlot(index, item.getGuiIcon(this::onClick));
             index++;
         }
+    }
+
+    public void refresh() {
+        displayListings(market);
     }
 
     private void onClick(Player player, GuiIcon icon)

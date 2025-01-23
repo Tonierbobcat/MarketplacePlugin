@@ -30,6 +30,9 @@ public class MarketProfile {
     public ItemListing get(UUID uuid) {
         return listings.get(uuid);
     }
+    public ConcurrentHashMap<UUID, ItemListing> getMap() {
+        return new ConcurrentHashMap<>(listings);
+    }
     public Collection<ItemListing> getAll() {
         return listings.values();
     }
