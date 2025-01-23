@@ -12,6 +12,8 @@ import java.util.function.Consumer;
 
 public interface IMarket {
 
+    TransactionLog getTransactionLog();
+
     ListItemResult listItem(Player player, ItemStack item, double price);
 
     boolean removeListing(ItemListing listing);

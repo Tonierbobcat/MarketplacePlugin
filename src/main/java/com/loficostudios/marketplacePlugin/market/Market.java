@@ -1,7 +1,6 @@
 package com.loficostudios.marketplacePlugin.market;
 
 import com.loficostudios.marketplacePlugin.MarketplacePlugin;
-import com.loficostudios.marketplacePlugin.gui.MarketPageGui;
 import com.loficostudios.marketplacePlugin.listing.ItemListing;
 import com.loficostudios.marketplacePlugin.utils.FileUtils;
 import com.loficostudios.marketplacePlugin.utils.MongoDBUtils;
@@ -19,13 +18,12 @@ import org.bukkit.inventory.ItemStack;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("LombokGetterMayBeUsed")
-public class Market extends AbstractMarket {
+public class Market extends AbstractMarket implements ISavableLoadable {
 
     public static final String SELL_PERMISSION = MarketplacePlugin.NAMESPACE + ".sell";
 
@@ -33,10 +31,10 @@ public class Market extends AbstractMarket {
 
     private final ConcurrentHashMap<UUID, MarketProfile> marketProfiles = new ConcurrentHashMap<>();
 
-    @Getter
-    private BlackMarket blackMarket;
-
     private final Economy economy;
+
+    @Getter
+    private TransactionLog transactionLog = new TransactionLog();
 
     public Market(MarketplacePlugin plugin) {
         this.economy = plugin.getEconomy();
@@ -59,7 +57,7 @@ public class Market extends AbstractMarket {
         if (!marketProfiles.containsKey(player.getUniqueId())) {
             marketProfiles.computeIfAbsent(playerUUID, k -> new MarketProfile(player))
                     .add(listing);
-            saveAsync();
+            asyncSave();
             return ListItemResult.SUCCESS_NEW;
         }
         else {
@@ -68,7 +66,7 @@ public class Market extends AbstractMarket {
                 profile.add(listing);
                 marketProfiles.put(playerUUID, profile);
                 player.sendMessage("Added: " + listing.getItem().getType());
-                saveAsync();
+                asyncSave();
 //                MarketPageGui.getInstances().forEach(MarketPageGui::refresh); //todo add to onUpdate
                 onUpdate.accept(this);
                 return ListItemResult.SUCCESS;
@@ -87,19 +85,23 @@ public class Market extends AbstractMarket {
             return new BuyItemResult(0, null, BuyItemResult.Type.INVALID_LISTING);
         }
         var seller = listing.getSeller();
-        double price = getPrice(buyer, seller, listing);
 
-        if (!economy.has(buyer, price))
+        double buyPrice = getPrice(buyer, seller, listing);
+
+        double sellPrice = buyPrice;
+
+        if (!economy.has(buyer, buyPrice))
             return new BuyItemResult(0, null, BuyItemResult.Type.NOT_ENOUGHT_MONEY);
         if (!removeListing(listing))
             return new BuyItemResult(0, null, BuyItemResult.Type.FAILURE);
-        if (!economy.depositPlayer(seller, listing.getPrice()).transactionSuccess())
+        if (!economy.depositPlayer(seller, sellPrice).transactionSuccess())
             return new BuyItemResult(0, null, BuyItemResult.Type.SELLER_TRANSACTION_FAILURE);
-        if (!economy.withdrawPlayer(buyer, price).transactionSuccess())
+        if (!economy.withdrawPlayer(buyer, buyPrice).transactionSuccess())
             return new BuyItemResult(0, null, BuyItemResult.Type.BUYER_TRANSACTION_FAILURE);
 
         buyer.getInventory().addItem(listing.getItem());
-        return new BuyItemResult(price, listing.getItem(), BuyItemResult.Type.SUCCESS);
+        transactionLog.log(buyPrice, sellPrice, listing.getSeller(), buyer, listing);
+        return new BuyItemResult(buyPrice, listing.getItem(), BuyItemResult.Type.SUCCESS);
     }
 
     @Override
@@ -119,7 +121,7 @@ public class Market extends AbstractMarket {
 //        MarketPageGui.getInstances().forEach(MarketPageGui::refresh); //todo move to onUpdate
 
         try {
-            MongoDBUtils.getServerCollection()
+            MongoDBUtils.getCollection(MarketplacePlugin.MARKET_COLLECTION)
                     .deleteOne(new Document("uuid", uuid.toString()));
             lgr.log(Level.INFO, "removed listing from database");
         } catch (Exception e) {
@@ -127,7 +129,7 @@ public class Market extends AbstractMarket {
             return false;
         }
 
-        saveAsync();
+        asyncSave();
         return true;
     }
 
@@ -179,59 +181,77 @@ public class Market extends AbstractMarket {
         return (ItemStack) FileUtils.deserializeString(string, ItemStack.class);
     }
 
-    private void save() {
-        Logger lgr = plugin.getLogger();
-        MongoCollection<Document> collection = MongoDBUtils.getServerCollection();
-
-        for (Map.Entry<UUID, MarketProfile> profile : marketProfiles.entrySet()) {
-            for (ItemListing listing : profile.getValue().getAll()) { //TODO change this to player profile
-                Document doc = new Document()
-                        .append("uuid", listing.getUniqueId().toString())
-                        .append("sellerUUID", listing.getSeller().getUniqueId().toString())
-                        .append("price", listing.getPrice())
-                        .append("item", saveItem(listing.getItem()));
-                collection.replaceOne(
-                        new Document("uuid", listing.getUniqueId().toString()),
-                        doc,
-                        new ReplaceOptions().upsert(true)
-                );
-            }
+    @Override
+    public boolean save() {
+        if (!MongoDBUtils.isInited()) {
+            return false;
         }
+        Logger lgr = plugin.getLogger();
 
-        lgr.log(Level.INFO, "Saved market!");
+        try {
+            MongoCollection<Document> collection = MongoDBUtils.getCollection(MarketplacePlugin.MARKET_COLLECTION);
+            for (Map.Entry<UUID, MarketProfile> profile : marketProfiles.entrySet()) {
+                for (ItemListing listing : profile.getValue().getAll()) {
+                    Document doc = new Document()
+                            .append("uuid", listing.getUniqueId().toString())
+                            .append("sellerUUID", listing.getSeller().getUniqueId().toString())
+                            .append("price", listing.getPrice())
+                            .append("item", saveItem(listing.getItem()));
+                    collection.replaceOne(
+                            new Document("uuid", listing.getUniqueId().toString()),
+                            doc,
+                            new ReplaceOptions().upsert(true)
+                    );
+                }
+            }
+
+            lgr.log(Level.INFO, "Saved market!");
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
+    @Override
     public boolean load() {
         Logger lgr = plugin.getLogger();
-        MongoCollection<Document> collection = MongoDBUtils.getServerCollection();
-        for (Document doc : collection.find()) {
-            String s = doc.getString("uuid");
-            lgr.log(Level.INFO, "ItemUUID: " + s);
-            UUID uuid = UUID.fromString(s);
-            String s1 = doc.getString("sellerUUID");
-            lgr.log(Level.INFO, "PlayerUUID: " + s1);
-            UUID sellerUUID = UUID.fromString(s1);
-            double price = doc.getDouble("price");
-            ItemStack item = loadItem(doc.getString("item"));
+        try {
+            MongoCollection<Document> collection = MongoDBUtils.getCollection(MarketplacePlugin.MARKET_COLLECTION);
+            for (Document doc : collection.find()) {
+                String s = doc.getString("uuid");
+                //lgr.log(Level.INFO, "ItemUUID: " + s);
+                UUID uuid = UUID.fromString(s);
+                String s1 = doc.getString("sellerUUID");
+                //lgr.log(Level.INFO, "PlayerUUID: " + s1);
+                UUID sellerUUID = UUID.fromString(s1);
+                double price = doc.getDouble("price");
+                ItemStack item = loadItem(doc.getString("item"));
 
-            OfflinePlayer player = Bukkit.getOfflinePlayer(sellerUUID);
+                OfflinePlayer player = Bukkit.getOfflinePlayer(sellerUUID);
 
-            ItemListing listing = new ItemListing(player, uuid, item, price);
+                ItemListing listing = new ItemListing(player, uuid, item, price);
 
-            marketProfiles
-                    .computeIfAbsent(sellerUUID, k -> new MarketProfile(player))
-                    .add(listing);
-            lgr.log(Level.INFO, "added entry");
+                marketProfiles
+                        .computeIfAbsent(sellerUUID, k -> new MarketProfile(player))
+                        .add(listing);
+            }
+            lgr.log(Level.INFO, "Loaded market!");
+            var loaded = transactionLog.load();
+            if (loaded) {
+                lgr.log(Level.INFO, "Loaded transaction logs!");
+            }
+            return loaded;
+        } catch (Exception e) {
+            return false;
         }
-        lgr.log(Level.INFO, "Loaded market!");
-        return true;
     }
 
-    public void saveAsync() {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, this::save);
+    @Override
+    public CompletableFuture<Boolean> asyncSave() {
+        return CompletableFuture.supplyAsync(this::save, task -> Bukkit.getScheduler().runTaskAsynchronously(plugin, this::save));
     }
-
-    public CompletableFuture<Boolean> loadAsync() {
+    @Override
+    public CompletableFuture<Boolean> asyncLoad() {
         return CompletableFuture.supplyAsync(this::load, task ->
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, task)
         );

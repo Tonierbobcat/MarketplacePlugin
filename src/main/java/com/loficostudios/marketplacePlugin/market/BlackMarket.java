@@ -16,6 +16,8 @@ import java.util.stream.Collectors;
 
 public class BlackMarket extends AbstractMarket {
 
+
+
     private static final int blackMarketSize = 10;
 
     @Getter
@@ -109,6 +111,11 @@ public class BlackMarket extends AbstractMarket {
     }
 
     @Override
+    public TransactionLog getTransactionLog() {
+        return base.getTransactionLog();
+    }
+
+    @Override
     public ListItemResult listItem(Player player, ItemStack item, double price) {
         return ListItemResult.FAILURE;
     }
@@ -134,6 +141,7 @@ public class BlackMarket extends AbstractMarket {
             return new BuyItemResult(0, null, BuyItemResult.Type.BUYER_TRANSACTION_FAILURE);
 
         buyer.getInventory().addItem(listing.getItem());
+        getTransactionLog().log(buyPrice, sellPrice, listing.getSeller(), buyer, listing);
         return new BuyItemResult(buyPrice, listing.getItem(), BuyItemResult.Type.SUCCESS);
     }
 }

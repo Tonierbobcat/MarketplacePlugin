@@ -24,8 +24,10 @@ public class MongoDBUtils {
     private static MongoClient client;
     @Getter
     private static MongoDatabase database;
-    @Getter
-    private static MongoCollection<Document> serverCollection;
+
+//    @Getter
+//    private static MongoCollection<Document> serverCollection;
+
     public static void initialize(FileConfiguration conf) {
         if (inited)
             return;
@@ -33,7 +35,6 @@ public class MongoDBUtils {
         var lgr = plugin.getLogger();
         final String path = "mongodb.";
 
-        String collection = "market";
 
         String database = conf.getString(path + "database");
         String username = conf.getString(path + "username");
@@ -81,17 +82,15 @@ public class MongoDBUtils {
         client = MongoClients.create(settings);
         MongoDBUtils.database = client.getDatabase(database);
 
-        if (isNullOrEmpty(collection))  {
-            lgr.log(Level.SEVERE, "Invalid serverCollection!");
-            return;
-        }
-
-        MongoDBUtils.serverCollection = MongoDBUtils.database.getCollection(collection);
+//        MongoDBUtils.serverCollection = MongoDBUtils.database.getCollection(MarketplacePlugin.SERVER_COLLECTION);
         var connected = isConnected();
         lgr.log(Level.INFO, "Is Connected: " + connected);
         inited = connected;
     }
 
+    public static MongoCollection<Document> getCollection(String collection) {
+        return database.getCollection(collection);
+    }
 
 //    @Deprecated(forRemoval = true)
     private static boolean isConnected() {

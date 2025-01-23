@@ -16,6 +16,7 @@ public class BlackMarketCommand implements Command {
     public void register() {
         MarketplacePlugin plugin = MarketplacePlugin.getInstance();
         new CommandTree("blackmarket")
+                .withPermission(MarketplacePlugin.NAMESPACE + ".blackmarket")
                 .executesPlayer((sender, args) -> {
                     var blackMarket = plugin.getActiveBlackMarket();
                     if (blackMarket == null) {

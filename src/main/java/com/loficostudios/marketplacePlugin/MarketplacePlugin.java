@@ -28,6 +28,10 @@ public final class MarketplacePlugin extends JavaPlugin {
     private static final String VAULT_NOT_INSTALLED = "Vault is not installed!";
     public static final String NAMESPACE = "marketplace";
 
+    public static final String SERVER_COLLECTION = NAMESPACE;
+    public static final String MARKET_COLLECTION = "market";
+    public static final String TRANSACTION_COLLECTION = "transactionLogs";
+
     @Getter
     private static MarketplacePlugin instance;
 
@@ -76,7 +80,7 @@ public final class MarketplacePlugin extends JavaPlugin {
                     MarketPageGui.getInstances().forEach(MarketPageGui::refresh);
                 });
 
-        activeMarket.loadAsync().whenComplete((loaded, ex) -> {
+        activeMarket.asyncLoad().whenComplete((loaded, ex) -> {
             if (loaded) {
                 generateBlackMarket(false);
                 startBlackMarketTimer();
