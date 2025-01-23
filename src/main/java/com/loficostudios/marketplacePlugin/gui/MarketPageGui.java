@@ -93,10 +93,12 @@ public class MarketPageGui extends Gui {
             }
         });
 
-        setSlot(38, new GuiIcon(GuiUtils.getButtonItem(
-                MarketConfig.MARKET_BACK_BUTTON_LABEL.replace("{previousPage}", "" + ((pageIndex + 1) - 1)),
-                Common.materialFromName(MarketConfig.MARKET_BACK_BUTTON_MATERIAL)),
-                "", this::lastPage));
+        if (pageIndex > 0) {
+            setSlot(38, new GuiIcon(GuiUtils.getButtonItem(
+                    MarketConfig.MARKET_BACK_BUTTON_LABEL.replace("{previousPage}", "" + ((pageIndex + 1) - 1)),
+                    Common.materialFromName(MarketConfig.MARKET_BACK_BUTTON_MATERIAL)),
+                    "", this::lastPage));
+        }
         setSlot(42, new GuiIcon(GuiUtils.getButtonItem(
                 MarketConfig.MARKET_NEXT_BUTTON_LABEL.replace("{nextPage}", "" + ((pageIndex + 1) + 1)),
                 Common.materialFromName(MarketConfig.MARKET_NEXT_BUTTON_MATERIAL)),
@@ -124,7 +126,6 @@ public class MarketPageGui extends Gui {
     @Override
     public void refresh() {
         displayListings(market);
-        MarketplacePlugin.getInstance().getServer().broadcastMessage("refreshed gui");
     }
 
     public int getPage() {

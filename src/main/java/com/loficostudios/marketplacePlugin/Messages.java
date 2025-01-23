@@ -1,6 +1,7 @@
 package com.loficostudios.marketplacePlugin;
 
 import com.loficostudios.marketplacePlugin.file.impl.YamlFile;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.lang.reflect.Field;
@@ -13,8 +14,6 @@ public class Messages {
 
     @MessageField
     public static final String INVALID_PRICE = "<gradient:#34F6F2:#7D53DE>Invalid price!";
-
-
 
     @MessageField
     public static final String MARKET_LIST_ITEM_FAILURE = "<gradient:#34F6F2:#7D53DE>Could not list item on the market";

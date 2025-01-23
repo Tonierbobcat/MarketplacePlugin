@@ -1,5 +1,8 @@
 package com.loficostudios.marketplacePlugin;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,19 +24,24 @@ public class MarketConfig {
     public static String MARKET_CONFIRMATION_CANCEL_BUTTON_MATERIAL;
 
     public static void saveConfig() {
-        MARKET_TITLE = getStringElseEmpty("gui.main.title");
-        MARKET_NEXT_BUTTON_LABEL = getStringElseEmpty("gui.main.next-button.label");
+        MARKET_TITLE = getFormattedString("gui.main.title");
+        MARKET_NEXT_BUTTON_LABEL = getFormattedString("gui.main.next-button.label");
         MARKET_NEXT_BUTTON_MATERIAL = getStringElseEmpty("gui.main.next-button.material");
-        MARKET_BACK_BUTTON_LABEL = getStringElseEmpty("gui.main.back-button.label");
+        MARKET_BACK_BUTTON_LABEL = getFormattedString("gui.main.back-button.label");
         MARKET_BACK_BUTTON_MATERIAL = getStringElseEmpty("gui.main.back-button.material");
-        MARKET_LISTING_PRICE = getStringElseEmpty("gui.main.listing.price");
-        MARKET_LISTING_PLAYER = getStringElseEmpty("gui.main.listing.player");
+        MARKET_LISTING_PRICE = getFormattedString("gui.main.listing.price");
+        MARKET_LISTING_PLAYER = getFormattedString("gui.main.listing.player");
 
-        MARKET_CONFIRMATION_TITLE = getStringElseEmpty("gui.confirmation.title");
-        MARKET_CONFIRMATION_CONFIRM_BUTTON_LABEL = getStringElseEmpty("gui.confirmation.confirm-button.label");
+        MARKET_CONFIRMATION_TITLE = getFormattedString("gui.confirmation.title");
+        MARKET_CONFIRMATION_CONFIRM_BUTTON_LABEL = getFormattedString("gui.confirmation.confirm-button.label");
         MARKET_CONFIRMATION_CONFIRM_BUTTON_MATERIAL = getStringElseEmpty("gui.confirmation.confirm-button.material");
-        MARKET_CONFIRMATION_CANCEL_BUTTON_LABEL = getStringElseEmpty("gui.confirmation.cancel-button.label");
+        MARKET_CONFIRMATION_CANCEL_BUTTON_LABEL = getFormattedString("gui.confirmation.cancel-button.label");
         MARKET_CONFIRMATION_CANCEL_BUTTON_MATERIAL = getStringElseEmpty("gui.confirmation.cancel-button.material");
+    }
+
+    private static @NotNull String getFormattedString(String path) {
+        Component component = MiniMessage.miniMessage().deserialize(getStringElseEmpty(path));
+        return LegacyComponentSerializer.legacySection().serialize(component);
     }
 
     private static @NotNull String getStringElseEmpty(String path) {

@@ -6,21 +6,21 @@ mongodb:
   port: 27017
 gui:
   main:
-    title: "Marketplace [Page {page} ]"
+    title: "<gradient:#343124:#654321>Marketplace [Page {page}]</gradient>"
     next-button:
-      label: "Go to page {nextPage}"
-      material: RED_WOOL
+      label: "<green>Go to page {nextPage}</green>"
+      material: GREEN_WOOL
     back-button:
-      label: "Go to page {previousPage}"
-      material: GREEN_WOOL
-    listing:
-      price: "Price: {price}"
-      player: "Seller: {player}"
-  confirmation:
-    title: "Confirmation"
-    confirm-button:
-      label: "Confirm"
-      material: GREEN_WOOL
-    cancel-button:
-      label: "Cancel"
+      label: "<red>Go to page {previousPage}</red>"
       material: RED_WOOL
+    listing:
+      price: "<gold>Price: {price}</gold>"
+      player: "<yellow>Seller: {player}</yellow>"
+  confirmation:
+    title: "<gradient:#123456:#654321>Confirmation</gradient>"
+    confirm-button:
+      label: "<green>Confirm</green>"
+      material: LIME_STAINED_GLASS_PANE
+    cancel-button:
+      label: "<red>Cancel</red>"
+      material: RED_STAINED_GLASS_PANE
