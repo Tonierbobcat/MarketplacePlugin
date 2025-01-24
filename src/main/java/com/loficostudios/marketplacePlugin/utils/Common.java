@@ -36,7 +36,9 @@ public class Common {
             return Material.BARRIER;
         }
     }
-
+    public static void sendMessageLegacy(Player player, String message) {
+        player.sendMessage(ColorUtils.deserialize(message));
+    }
     public static void broadcast(String message) {
         var mm = MiniMessage.miniMessage();
         Component component =  mm.deserialize("<reset/>" + message);
@@ -46,6 +48,7 @@ public class Common {
     }
     public static void broadcast(String message, Player... excluded) {
         var mm = MiniMessage.miniMessage();
+//        mm.des
         Component component =  mm.deserialize("<reset/>" + message);
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (Arrays.stream(excluded).anyMatch(p -> player.getUniqueId().equals(p.getUniqueId())))
