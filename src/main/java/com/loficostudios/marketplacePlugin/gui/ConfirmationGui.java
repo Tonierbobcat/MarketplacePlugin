@@ -1,14 +1,12 @@
 package com.loficostudios.marketplacePlugin.gui;
 
-import com.loficostudios.marketplacePlugin.MarketConfig;
+import com.loficostudios.marketplacePlugin.config.MarketConfig;
 import com.loficostudios.marketplacePlugin.gui.api.Gui;
 import com.loficostudios.marketplacePlugin.gui.api.GuiIcon;
 import com.loficostudios.marketplacePlugin.listing.ItemListing;
-import com.loficostudios.marketplacePlugin.market.IMarket;
+import com.loficostudios.marketplacePlugin.market.api.IMarket;
 import com.loficostudios.marketplacePlugin.utils.Common;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.UUID;
 

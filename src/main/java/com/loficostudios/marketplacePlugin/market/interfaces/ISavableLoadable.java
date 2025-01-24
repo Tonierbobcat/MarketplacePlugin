@@ -1,4 +1,4 @@
-package com.loficostudios.marketplacePlugin.market;
+package com.loficostudios.marketplacePlugin.market.interfaces;
 
 import java.util.concurrent.CompletableFuture;
 

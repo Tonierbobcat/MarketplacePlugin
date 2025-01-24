@@ -1,7 +1,6 @@
 package com.loficostudios.marketplacePlugin.listing;
 
-import com.loficostudios.marketplacePlugin.MarketConfig;
-import com.loficostudios.marketplacePlugin.MarketplacePlugin;
+import com.loficostudios.marketplacePlugin.config.MarketConfig;
 import com.loficostudios.marketplacePlugin.gui.api.GuiIcon;
 import lombok.Getter;
 import org.bukkit.Bukkit;

@@ -1,11 +1,14 @@
-package com.loficostudios.marketplacePlugin.market;
+package com.loficostudios.marketplacePlugin.market.api;
 
 import com.loficostudios.marketplacePlugin.listing.ItemListing;
+import com.loficostudios.marketplacePlugin.market.BuyItemResult;
+import com.loficostudios.marketplacePlugin.market.ListItemResult;
+import com.loficostudios.marketplacePlugin.market.MarketProfile;
+import com.loficostudios.marketplacePlugin.market.transactionlog.TransactionLog;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;

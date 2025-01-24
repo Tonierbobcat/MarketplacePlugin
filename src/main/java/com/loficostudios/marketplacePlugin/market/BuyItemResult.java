@@ -1,6 +1,6 @@
 package com.loficostudios.marketplacePlugin.market;
 
-import com.loficostudios.marketplacePlugin.Messages;
+import com.loficostudios.marketplacePlugin.config.Messages;
 import lombok.Getter;
 import org.bukkit.inventory.ItemStack;
 

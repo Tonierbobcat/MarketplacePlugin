@@ -1,5 +1,6 @@
-package com.loficostudios.marketplacePlugin;
+package com.loficostudios.marketplacePlugin.config;
 
+import com.loficostudios.marketplacePlugin.MarketplacePlugin;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;

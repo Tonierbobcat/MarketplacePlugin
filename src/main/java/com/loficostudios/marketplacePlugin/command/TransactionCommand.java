@@ -1,25 +1,19 @@
 package com.loficostudios.marketplacePlugin.command;
 
-import com.loficostudios.marketplacePlugin.MarketConfig;
+import com.loficostudios.marketplacePlugin.config.MarketConfig;
 import com.loficostudios.marketplacePlugin.MarketplacePlugin;
-import com.loficostudios.marketplacePlugin.Messages;
+import com.loficostudios.marketplacePlugin.config.Messages;
 import com.loficostudios.marketplacePlugin.command.impl.Command;
-import com.loficostudios.marketplacePlugin.listing.ItemListing;
-import com.loficostudios.marketplacePlugin.market.TransactionEntry;
-import com.loficostudios.marketplacePlugin.market.TransactionLog;
+import com.loficostudios.marketplacePlugin.market.transactionlog.TransactionEntry;
 import com.loficostudios.marketplacePlugin.utils.Common;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.IntegerArgument;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-
-import java.util.concurrent.CompletableFuture;
-
-import static com.loficostudios.marketplacePlugin.utils.Common.getItemName;
 
 public class TransactionCommand implements Command {
+    private static final int AMOUNT_OF_ENTRIES_TO_DISPLAY = 7;
 
     private final MarketplacePlugin plugin;
     private final Economy economy;
@@ -45,13 +39,9 @@ public class TransactionCommand implements Command {
                 }).register();
     }
 
-
-
     private void listTransactions(Player player, int page) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-
-            //get first 10 of logs.
-            int perPage = 7;
+            int perPage = AMOUNT_OF_ENTRIES_TO_DISPLAY;
 
             var logs = plugin.getActiveMarket().getTransactionLog().getLogs(player);
 

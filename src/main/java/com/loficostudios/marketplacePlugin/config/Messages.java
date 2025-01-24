@@ -1,7 +1,8 @@
-package com.loficostudios.marketplacePlugin;
+package com.loficostudios.marketplacePlugin.config;
 
+import com.loficostudios.marketplacePlugin.MarketplacePlugin;
+import com.loficostudios.marketplacePlugin.config.annotations.MessageField;
 import com.loficostudios.marketplacePlugin.file.impl.YamlFile;
-import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.lang.reflect.Field;

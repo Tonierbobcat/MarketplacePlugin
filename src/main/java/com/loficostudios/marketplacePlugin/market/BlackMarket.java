@@ -2,6 +2,9 @@ package com.loficostudios.marketplacePlugin.market;
 
 import com.loficostudios.marketplacePlugin.MarketplacePlugin;
 import com.loficostudios.marketplacePlugin.listing.ItemListing;
+import com.loficostudios.marketplacePlugin.market.api.AbstractMarket;
+import com.loficostudios.marketplacePlugin.market.api.IMarket;
+import com.loficostudios.marketplacePlugin.market.transactionlog.TransactionLog;
 import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.OfflinePlayer;
@@ -11,7 +14,6 @@ import org.joml.Random;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class BlackMarket extends AbstractMarket {
@@ -119,6 +121,8 @@ public class BlackMarket extends AbstractMarket {
     public ListItemResult listItem(Player player, ItemStack item, double price) {
         return ListItemResult.FAILURE;
     }
+
+
 
     @Override
     public BuyItemResult buyItem(Player buyer, UUID itemUUID) {

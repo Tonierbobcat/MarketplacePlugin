@@ -1,11 +1,11 @@
 package com.loficostudios.marketplacePlugin.gui;
 
-import com.loficostudios.marketplacePlugin.MarketConfig;
+import com.loficostudios.marketplacePlugin.config.MarketConfig;
 import com.loficostudios.marketplacePlugin.MarketplacePlugin;
 import com.loficostudios.marketplacePlugin.gui.api.Gui;
 import com.loficostudios.marketplacePlugin.gui.api.GuiIcon;
 import com.loficostudios.marketplacePlugin.listing.ItemListing;
-import com.loficostudios.marketplacePlugin.market.IMarket;
+import com.loficostudios.marketplacePlugin.market.api.IMarket;
 import com.loficostudios.marketplacePlugin.utils.Common;
 import com.loficostudios.marketplacePlugin.utils.GuiUtils;
 import lombok.Getter;

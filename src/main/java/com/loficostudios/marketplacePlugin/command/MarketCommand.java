@@ -1,11 +1,10 @@
 package com.loficostudios.marketplacePlugin.command;
 
 import com.loficostudios.marketplacePlugin.MarketplacePlugin;
-import com.loficostudios.marketplacePlugin.Messages;
+import com.loficostudios.marketplacePlugin.config.Messages;
 import com.loficostudios.marketplacePlugin.command.impl.Command;
 import com.loficostudios.marketplacePlugin.gui.MarketPageGui;
 import com.loficostudios.marketplacePlugin.market.ListItemResult;
-import com.loficostudios.marketplacePlugin.market.Market;
 import com.loficostudios.marketplacePlugin.utils.Common;
 import dev.jorel.commandapi.CommandTree;
 import dev.jorel.commandapi.arguments.DoubleArgument;

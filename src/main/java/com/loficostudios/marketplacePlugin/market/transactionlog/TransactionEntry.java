@@ -1,4 +1,4 @@
-package com.loficostudios.marketplacePlugin.market;
+package com.loficostudios.marketplacePlugin.market.transactionlog;
 
 import com.loficostudios.marketplacePlugin.utils.FileUtils;
 import org.bson.Document;
