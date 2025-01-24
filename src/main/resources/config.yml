@@ -1,13 +1,14 @@
 #DATABASE
 mongodb:
   database: "marketplace"
-  username: "user"
-  password: "passwd"
-  hostname: "loficostudios.com"
+  username: ""
+  password: ""
+  hostname: "localhost"
   port: 27017
+transaction-log-entry-bought: "<gradient:#343124:#654321>Bought: {amount}x {item} for {symbol}{price} from {player}</gradient>"
+transaction-log-entry-sold: "<gradient:#343124:#654321>Sold: {amount}x {item} for {symbol}{price} to {player}</gradient>"
 
-#IN HOURS
-black-market-interval: 1
+black-market-interval: 1 #IN HOURS
 gui:
   main:
     title: "<gradient:#343124:#654321>Marketplace [Page {page}]</gradient>"

@@ -7,6 +7,8 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -50,5 +52,31 @@ public class Common {
                 continue;
             ((Audience) player).sendMessage(component);
         }
+    }
+
+    public static String getItemName(ItemStack item) {
+        var meta = item.getItemMeta();
+        if (meta != null && !meta.getDisplayName().isEmpty()) {
+            return meta.getDisplayName();
+        }
+        else {
+            return formatMaterial(item.getType());
+        }
+    }
+    public static String formatMaterial(@NotNull Material material) {
+        String rawName = material.toString();
+
+        String[] words = rawName.split("_");
+
+        for (int i = 0; i < words.length; i++) {
+            String raw = words[i];
+
+            if (!raw.isEmpty()) {
+                char firstLetter = raw.charAt(0);
+                words[i] =  Character.toUpperCase(firstLetter) + raw.substring(1).toLowerCase();
+            }
+        }
+
+        return String.join(" ", words);
     }
 }

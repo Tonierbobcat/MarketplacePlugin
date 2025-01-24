@@ -10,15 +10,17 @@ import com.loficostudios.marketplacePlugin.utils.Common;
 import dev.jorel.commandapi.CommandTree;
 import dev.jorel.commandapi.arguments.DoubleArgument;
 import dev.jorel.commandapi.arguments.LiteralArgument;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class MarketCommand implements Command {
 
-    private final Market market;
-
-    public MarketCommand(Market market) {
-        this.market = market;
+    private final MarketplacePlugin plugin;
+    private final Economy economy;
+    public MarketCommand(MarketplacePlugin plugin) {
+        this.plugin = plugin;
+        this.economy = plugin.getEconomy();
     }
 
     @Override
@@ -28,7 +30,7 @@ public class MarketCommand implements Command {
                 .executesPlayer((sender, args) -> {
 //                    Common.sendMessage(sender, new NotImplementedException("Not Implemented!").getMessage());
 
-                    new MarketPageGui(MarketplacePlugin.getInstance().getActiveMarket(), 0).open(sender);
+                    new MarketPageGui(plugin.getActiveMarket(), 0).open(sender);
 
 
                 })
@@ -46,19 +48,13 @@ public class MarketCommand implements Command {
     }
 
     private void sell(Player player, ItemStack item, double price) {
-        var result = market.listItem(player, new ItemStack(item), price);
-
-        var meta = item.getItemMeta();
-
-        String itemName = meta != null ? meta.getDisplayName() : item.getType().name();
+        var result = plugin.getActiveMarket().listItem(player, new ItemStack(item), price);
 
         if (ListItemResult.isSuccess(result))
             item.setAmount(0);
 
         Common.sendMessage(player, result.getMessage()
                 .replace("{price}", "" + price)
-                .replace("{item}", itemName));
-
-
+                .replace("{item}", Common.getItemName(item)));
     }
 }

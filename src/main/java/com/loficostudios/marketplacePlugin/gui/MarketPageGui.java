@@ -76,6 +76,17 @@ public class MarketPageGui extends Gui {
             setSlot(i, new GuiIcon(new ItemStack(Material.GRAY_STAINED_GLASS_PANE), "fill"));
         }
 
+        if (pageIndex > 0) {
+            setSlot(38, new GuiIcon(GuiUtils.getButtonItem(
+                    MarketConfig.MARKET_BACK_BUTTON_LABEL.replace("{previousPage}", "" + ((pageIndex + 1) - 1)),
+                    Common.materialFromName(MarketConfig.MARKET_BACK_BUTTON_MATERIAL)),
+                    "", this::lastPage));
+        }
+        setSlot(42, new GuiIcon(GuiUtils.getButtonItem(
+                MarketConfig.MARKET_NEXT_BUTTON_LABEL.replace("{nextPage}", "" + ((pageIndex + 1) + 1)),
+                Common.materialFromName(MarketConfig.MARKET_NEXT_BUTTON_MATERIAL)),
+                "", this::nextPage));
+
         Bukkit.getScheduler().runTaskAsynchronously(MarketplacePlugin.getInstance(), () -> {
             var listings = market.getListings().values().stream().toList();
 
@@ -94,17 +105,6 @@ public class MarketPageGui extends Gui {
                 index++;
             }
         });
-
-        if (pageIndex > 0) {
-            setSlot(38, new GuiIcon(GuiUtils.getButtonItem(
-                    MarketConfig.MARKET_BACK_BUTTON_LABEL.replace("{previousPage}", "" + ((pageIndex + 1) - 1)),
-                    Common.materialFromName(MarketConfig.MARKET_BACK_BUTTON_MATERIAL)),
-                    "", this::lastPage));
-        }
-        setSlot(42, new GuiIcon(GuiUtils.getButtonItem(
-                MarketConfig.MARKET_NEXT_BUTTON_LABEL.replace("{nextPage}", "" + ((pageIndex + 1) + 1)),
-                Common.materialFromName(MarketConfig.MARKET_NEXT_BUTTON_MATERIAL)),
-                "", this::nextPage));
     }
 
     private void nextPage(Player player, GuiIcon icon) {

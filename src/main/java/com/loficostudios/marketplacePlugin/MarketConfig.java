@@ -10,6 +10,7 @@ import java.util.Objects;
 
 public class MarketConfig {
     public static int BLACK_MARKET_INTERVAL_HOURS;
+
     public static String MARKET_TITLE;
     public static String MARKET_NEXT_BUTTON_LABEL;
     public static String MARKET_NEXT_BUTTON_MATERIAL;
@@ -24,8 +25,15 @@ public class MarketConfig {
     public static String MARKET_CONFIRMATION_CANCEL_BUTTON_LABEL;
     public static String MARKET_CONFIRMATION_CANCEL_BUTTON_MATERIAL;
 
+    public static String TRANSACTION_LOG_ENTRY_BOUGHT;
+    public static String TRANSACTION_LOG_ENTRY_SOLD;
+
+
     public static void saveConfig() {
         FileConfiguration config = MarketplacePlugin.getInstance().getConfig();
+
+        TRANSACTION_LOG_ENTRY_BOUGHT = getStringElseEmpty("transaction-log-entry-bought").replace("{symbol}", MarketplacePlugin.getEconomySymbol());
+        TRANSACTION_LOG_ENTRY_SOLD = getStringElseEmpty("transaction-log-entry-sold").replace("{symbol}", MarketplacePlugin.getEconomySymbol());
 
         BLACK_MARKET_INTERVAL_HOURS = config.getInt("black-market-interval");
 
@@ -42,6 +50,8 @@ public class MarketConfig {
         MARKET_CONFIRMATION_CONFIRM_BUTTON_MATERIAL = getStringElseEmpty("gui.confirmation.confirm-button.material");
         MARKET_CONFIRMATION_CANCEL_BUTTON_LABEL = getFormattedString("gui.confirmation.cancel-button.label");
         MARKET_CONFIRMATION_CANCEL_BUTTON_MATERIAL = getStringElseEmpty("gui.confirmation.cancel-button.material");
+
+
     }
 
     private static @NotNull String getFormattedString(String path) {

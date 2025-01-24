@@ -2,6 +2,7 @@ package com.loficostudios.marketplacePlugin;
 
 import com.loficostudios.marketplacePlugin.command.BlackMarketCommand;
 import com.loficostudios.marketplacePlugin.command.MarketCommand;
+import com.loficostudios.marketplacePlugin.command.TransactionCommand;
 import com.loficostudios.marketplacePlugin.command.impl.Command;
 import com.loficostudios.marketplacePlugin.gui.MarketPageGui;
 import com.loficostudios.marketplacePlugin.gui.api.GuiManager;
@@ -32,6 +33,10 @@ public final class MarketplacePlugin extends JavaPlugin {
     public static final String MARKET_COLLECTION = "market";
     public static final String TRANSACTION_COLLECTION = "transactionLogs";
 
+
+    @Getter
+    private static String economySymbol;
+
     @Getter
     private static MarketplacePlugin instance;
 
@@ -43,6 +48,8 @@ public final class MarketplacePlugin extends JavaPlugin {
     private BlackMarket activeBlackMarket;
     @Getter
     private Economy economy;
+
+
 
     private BukkitTask blackMarketTimer;
     private boolean blackMarketTaskCancelled;
@@ -61,12 +68,12 @@ public final class MarketplacePlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         CommandAPI.onEnable();
+        setupEconomy();
+        economySymbol = economy.currencyNameSingular();
 
         saveDefaultConfig();
         MarketConfig.saveConfig();
         Messages.saveConfig();
-        setupEconomy();
-
         guiManager = new GuiManager();
 
         MongoDBUtils.initialize(this.getConfig());
@@ -97,8 +104,9 @@ public final class MarketplacePlugin extends JavaPlugin {
 
     private void registerCommands() {
         Arrays.asList(
-                new MarketCommand(activeMarket),
-                new BlackMarketCommand()
+                new MarketCommand(this),
+                new BlackMarketCommand(),
+                new TransactionCommand(this)
         ).forEach(Command::register);
     }
 

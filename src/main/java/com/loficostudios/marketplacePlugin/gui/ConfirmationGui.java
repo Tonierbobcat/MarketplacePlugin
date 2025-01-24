@@ -47,16 +47,9 @@ public class ConfirmationGui extends Gui {
         UUID uuid = listing.getUniqueId();
 
         var result =  market.buyItem(player, uuid);
-        ItemStack item = result.item();
-
-        String itemName = null;
-        if (item != null) {
-            ItemMeta meta = item.getItemMeta();
-            itemName = meta != null ? meta.getDisplayName() : item.getType().name();
-        }
 
         Common.sendMessage(player, result.type().getMessage()
-                .replace("{item}", itemName != null ? itemName : "null")
+                .replace("{item}", Common.getItemName(result.item()))
                 .replace("{price}", "" + result.price()));
         close(player);
         new MarketPageGui(market, lastPage).open(player);

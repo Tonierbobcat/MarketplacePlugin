@@ -22,19 +22,21 @@ public class Messages {
     public static final String MARKET_BUY_ITEM_FAILURE = "Could not buy item";
 
     @MessageField
-    public static final String MARKET_BUY = "Bought item <gray>{item} <yellow>{price}";
+    public static final String MARKET_BUY = "Bought item <gray>{item} <yellow>{symbol}{price}";
 
     @MessageField
-    public static final String MARKET_LISTED_ITEM = "<gradient:#34F6F2:#7D53DE>Successfully listed item on the market. <gray>{item} <yellow>{price}";
+    public static final String MARKET_LISTED_ITEM = "<gradient:#34F6F2:#7D53DE>Successfully listed item on the market. <gray>{item} <yellow>{symbol}{price}";
 
     @MessageField
-    public static final String MARKET_FIRST_TIME_LISTED_ITEM = "<gradient:#34F6F2:#7D53DE>Successfully listed item on the market for the first time. <gray>{item} <yellow>{price}";
+    public static final String MARKET_FIRST_TIME_LISTED_ITEM = "<gradient:#34F6F2:#7D53DE>Successfully listed item on the market for the first time. <gray>{item} <yellow>{symbol}{price}";
     @MessageField
-    public static final String MARKET_NOT_ENOUGH_TO_BUY = "Not enough money to buy this item you need {price} to buy {item}";
+    public static final String MARKET_NOT_ENOUGH_TO_BUY = "Not enough money to buy this item you need {symbol}{price} to buy {item}";
     @MessageField
     public static final String INVALID_ITEM = "Invalid Item!";
     @MessageField
     public static final String INVALID_LISTING = "Invalid Listing!";
+    @MessageField
+    public static final String INVALID_PAGE = "Invalid Page!";
     @MessageField
     public static final String SELLER_TRANSACTION_NOT_SUCCESSFUL = "Error occured when depositing funds to seller";
     @MessageField
@@ -62,7 +64,7 @@ public class Messages {
                         String configValue = config.getString(configPath);
 
                         field.setAccessible(true);
-                        field.set(null, configValue);
+                        field.set(null, configValue.replace("{symbol}", MarketplacePlugin.getEconomySymbol()));
                     } else {
                         config.set(configPath, (String) field.get(null));
                     }

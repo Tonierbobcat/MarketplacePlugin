@@ -1,6 +1,7 @@
 package com.loficostudios.marketplacePlugin.listing;
 
 import com.loficostudios.marketplacePlugin.MarketConfig;
+import com.loficostudios.marketplacePlugin.MarketplacePlugin;
 import com.loficostudios.marketplacePlugin.gui.api.GuiIcon;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -66,6 +67,7 @@ public class ItemListing {
     }
 
     private @NotNull List<String> getDescription(ItemMeta meta, String name) {
+
         var lore = meta.getLore();
         if (lore == null) {
             lore = Arrays.asList(
