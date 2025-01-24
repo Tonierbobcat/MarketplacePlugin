@@ -1,7 +1,7 @@
 package com.loficostudios.marketplacePlugin.listing;
 
 import com.loficostudios.marketplacePlugin.config.MarketConfig;
-import com.loficostudios.marketplacePlugin.gui.api.GuiIcon;
+import com.loficostudios.melodyapi.gui.GuiIcon;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -46,7 +46,6 @@ public class ItemListing {
     public @NotNull OfflinePlayer getSeller() {
         return Bukkit.getOfflinePlayer(sellerUUID);
     }
-
 
     public GuiIcon getGuiIcon(@Nullable BiConsumer<Player, GuiIcon> onClick) {
         var newItem = new ItemStack(this.item);

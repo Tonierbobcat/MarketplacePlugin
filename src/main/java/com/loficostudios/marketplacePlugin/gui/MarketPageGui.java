@@ -2,12 +2,12 @@ package com.loficostudios.marketplacePlugin.gui;
 
 import com.loficostudios.marketplacePlugin.config.MarketConfig;
 import com.loficostudios.marketplacePlugin.MarketplacePlugin;
-import com.loficostudios.marketplacePlugin.gui.api.Gui;
-import com.loficostudios.marketplacePlugin.gui.api.GuiIcon;
 import com.loficostudios.marketplacePlugin.listing.ItemListing;
 import com.loficostudios.marketplacePlugin.market.api.IMarket;
 import com.loficostudios.marketplacePlugin.utils.Common;
 import com.loficostudios.marketplacePlugin.utils.GuiUtils;
+import com.loficostudios.melodyapi.gui.GuiIcon;
+import com.loficostudios.melodyapi.gui.MelodyGui;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-public class MarketPageGui extends Gui {
+public class MarketPageGui extends MelodyGui {
     @Getter
     private static final List<MarketPageGui> instances = new ArrayList<>();
 

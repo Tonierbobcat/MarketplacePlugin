@@ -1,18 +1,19 @@
 package com.loficostudios.marketplacePlugin.gui;
 
+import com.loficostudios.marketplacePlugin.MarketplacePlugin;
 import com.loficostudios.marketplacePlugin.config.MarketConfig;
-import com.loficostudios.marketplacePlugin.gui.api.Gui;
-import com.loficostudios.marketplacePlugin.gui.api.GuiIcon;
 import com.loficostudios.marketplacePlugin.listing.ItemListing;
 import com.loficostudios.marketplacePlugin.market.api.IMarket;
 import com.loficostudios.marketplacePlugin.utils.Common;
+import com.loficostudios.melodyapi.gui.GuiIcon;
+import com.loficostudios.melodyapi.gui.MelodyGui;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
 import static com.loficostudios.marketplacePlugin.utils.GuiUtils.getButtonItem;
 
-public class ConfirmationGui extends Gui {
+public class ConfirmationGui extends MelodyGui {
 
 
     private final int lastPage;

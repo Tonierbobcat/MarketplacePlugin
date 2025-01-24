@@ -8,12 +8,11 @@ import com.loficostudios.marketplacePlugin.config.MarketConfig;
 import com.loficostudios.marketplacePlugin.config.Messages;
 import com.loficostudios.marketplacePlugin.exceptions.VaultNotFoundException;
 import com.loficostudios.marketplacePlugin.gui.MarketPageGui;
-import com.loficostudios.marketplacePlugin.gui.api.GuiManager;
-import com.loficostudios.marketplacePlugin.gui.api.listeners.GuiListener;
 import com.loficostudios.marketplacePlugin.market.BlackMarket;
 import com.loficostudios.marketplacePlugin.market.Market;
 import com.loficostudios.marketplacePlugin.utils.Common;
 import com.loficostudios.marketplacePlugin.utils.MongoDBUtils;
+import com.loficostudios.melodyapi.MelodyPlugin;
 import dev.jorel.commandapi.*;
 import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
@@ -28,7 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 
-public final class MarketplacePlugin extends JavaPlugin {
+public final class MarketplacePlugin extends MelodyPlugin<MarketplacePlugin> {
     private static final String VAULT_NOT_INSTALLED = "Vault is not installed!";
     public static final String NAMESPACE = "marketplace";
 
@@ -43,8 +42,6 @@ public final class MarketplacePlugin extends JavaPlugin {
     @Getter
     private static MarketplacePlugin instance;
 
-    @Getter
-    private GuiManager guiManager;
     @Getter
     private Market activeMarket;
     @Getter
@@ -69,7 +66,7 @@ public final class MarketplacePlugin extends JavaPlugin {
     }
 
     @Override
-    public void onEnable() {
+    protected void onStart() {
         CommandAPI.onEnable();
         setupEconomy();
         economySymbol = economy.currencyNameSingular();
@@ -77,7 +74,6 @@ public final class MarketplacePlugin extends JavaPlugin {
         saveDefaultConfig();
         MarketConfig.saveConfig();
         Messages.saveConfig();
-        guiManager = new GuiManager();
 
         MongoDBUtils.initialize(this.getConfig());
         if (!MongoDBUtils.isInited()) {
@@ -98,7 +94,6 @@ public final class MarketplacePlugin extends JavaPlugin {
         });
 
         registerCommands();
-        registerListeners();
     }
 
     @Override
@@ -111,15 +106,6 @@ public final class MarketplacePlugin extends JavaPlugin {
                 new BlackMarketCommand(),
                 new TransactionCommand(this)
         ).forEach(Command::register);
-    }
-
-    public void reload() {
-    }
-
-    private void registerListeners() {
-        Arrays.asList(
-                new GuiListener(guiManager)
-        ).forEach(listener -> Bukkit.getPluginManager().registerEvents(listener, this));
     }
 
     private void setupEconomy() {
