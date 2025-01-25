@@ -1,11 +1,10 @@
 package com.loficostudios.marketplacePlugin.market;
 
-import com.loficostudios.marketplacePlugin.listing.ItemListing;
+import com.loficostudios.marketplacePlugin.market.listing.ItemListing;
 import lombok.Getter;
 import org.bukkit.OfflinePlayer;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 

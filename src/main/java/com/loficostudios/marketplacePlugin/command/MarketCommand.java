@@ -50,17 +50,15 @@ public class MarketCommand implements Command {
                                 }))).register();
     }
 
-    private void sell(Player player, ItemStack item, double price) {
-        var result = plugin.getActiveMarket().listItem(player, new ItemStack(item), price);
+    private void sell(Player player, ItemStack itemInHand, double price) {
+        var clone = new ItemStack(itemInHand);
+        var result = plugin.getActiveMarket().listItem(player, clone, price);
 
         if (ListItemResult.isSuccess(result))
-            item.setAmount(0);
+            itemInHand.setAmount(0);
 
-        MiniMessage miniMessage = MiniMessage.miniMessage();
-        Component component = miniMessage.deserialize(result.getMessage());
-        String message = LegacyComponentSerializer.legacySection().serialize(component);
-        Common.sendMessageLegacy(player, message
+        Common.sendMessage(player, result.getMessage()
                 .replace("{price}", "" + price)
-                .replace("{item}", ColorUtils.deserialize(Common.getItemName(item))));
+                .replace("{item}", Common.getItemName(clone)));
     }
 }

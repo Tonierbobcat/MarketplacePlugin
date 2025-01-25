@@ -2,7 +2,7 @@ package com.loficostudios.marketplacePlugin.gui;
 
 import com.loficostudios.marketplacePlugin.config.MarketConfig;
 import com.loficostudios.marketplacePlugin.MarketplacePlugin;
-import com.loficostudios.marketplacePlugin.listing.ItemListing;
+import com.loficostudios.marketplacePlugin.market.listing.ItemListing;
 import com.loficostudios.marketplacePlugin.market.api.IMarket;
 import com.loficostudios.marketplacePlugin.utils.Common;
 import com.loficostudios.marketplacePlugin.utils.GuiUtils;

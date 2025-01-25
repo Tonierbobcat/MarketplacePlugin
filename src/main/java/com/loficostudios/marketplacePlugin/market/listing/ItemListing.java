@@ -1,5 +1,6 @@
-package com.loficostudios.marketplacePlugin.listing;
+package com.loficostudios.marketplacePlugin.market.listing;
 
+import com.loficostudios.marketplacePlugin.MarketplacePlugin;
 import com.loficostudios.marketplacePlugin.config.MarketConfig;
 import com.loficostudios.melodyapi.gui.GuiIcon;
 import lombok.Getter;
@@ -69,13 +70,17 @@ public class ItemListing {
         var lore = meta.getLore();
         if (lore == null) {
             lore = Arrays.asList(
-                    MarketConfig.MARKET_LISTING_PRICE.replace("{price}", "" + price),
+                    MarketConfig.MARKET_LISTING_PRICE
+                            .replace("{price}", "" + price)
+                            .replace("{symbol}", MarketplacePlugin.getEconomySymbol()),
                     MarketConfig.MARKET_LISTING_PLAYER.replace("{player}", name)
             );
         }
         else {
-            lore.addFirst(MarketConfig.MARKET_LISTING_PRICE.replace("{price}", "" + price));
             lore.addFirst(MarketConfig.MARKET_LISTING_PLAYER.replace("{player}", name));
+            lore.addFirst(MarketConfig.MARKET_LISTING_PRICE
+                    .replace("{price}", "" + price)
+                    .replace("{symbol}", MarketplacePlugin.getEconomySymbol()));
         }
         return lore;
     }

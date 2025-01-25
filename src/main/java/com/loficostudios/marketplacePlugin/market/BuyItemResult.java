@@ -19,5 +19,11 @@ public record BuyItemResult(double price, ItemStack item, Type type) {
         Type(String message) {
             this.message = message;
         }
+
+
+    }
+
+    public  boolean isSuccess() {
+        return type.equals(Type.SUCCESS);
     }
 }

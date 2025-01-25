@@ -2,55 +2,64 @@ package com.loficostudios.marketplacePlugin.config;
 
 import com.loficostudios.marketplacePlugin.MarketplacePlugin;
 import com.loficostudios.marketplacePlugin.config.annotations.MessageField;
-import com.loficostudios.marketplacePlugin.file.impl.YamlFile;
+import com.loficostudios.melodyapi.file.impl.YamlFile;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.lang.reflect.Field;
 
 public class Messages {
     @MessageField
-    public static final String MARKET_NO_PERMISSION_TO_LIST_ITEM = "<gradient:#34F6F2:#7D53DE>You do not have permission to list on the market";
+    public static String MARKET_NO_PERMISSION_TO_LIST_ITEM = "<color:#FF7E6B>You don't have permission to list items on the market.</color>";
     @MessageField
-    public static final String MARKET_NO_PERMISSION_TO_BUY = "You do not have permission to buy";
+    public static String MARKET_NO_PERMISSION_TO_BUY = "<color:#FF7E6B>You don't have permission to buy items from the market.</color>";
 
     @MessageField
-    public static final String INVALID_PRICE = "<gradient:#34F6F2:#7D53DE>Invalid price!";
+    public static String INVALID_PRICE = "<color:#FF7E6B>Invalid price entered. Please try again.</color>";
 
     @MessageField
-    public static final String MARKET_LIST_ITEM_FAILURE = "<gradient:#34F6F2:#7D53DE>Could not list item on the market";
+    public static String MARKET_LIST_ITEM_FAILURE = "<color:#FF7E6B>Unable to list the item on the market. Please check your input.</color>";
 
     @MessageField
-    public static final String MARKET_BUY_ITEM_FAILURE = "Could not buy item";
+    public static String MARKET_BUY_ITEM_FAILURE = "<color:#FF7E6B>Unable to purchase the item. Please try again later.</color>";
 
     @MessageField
-    public static final String MARKET_BUY = "Bought item <gray>{item} <yellow>{symbol}{price}";
+    public static String MARKET_BUY = "<color:#A9F0D1>Successfully purchased <white>{item}</white><reset><color:#A9F0D1> for <white>{symbol}{price}</white><reset><color:#A9F0D1>.</color>";
 
     @MessageField
-    public static final String MARKET_LISTED_ITEM = "<gradient:#34F6F2:#7D53DE>Successfully listed item on the market. <gray>{item} <yellow>{symbol}{price}";
+    public static String MARKET_LISTED_ITEM = "<color:#A9F0D1>Item listed successfully! <white>{item}</white><reset><color:#A9F0D1> for <white>{symbol}{price}</white><reset><color:#A9F0D1>.</color>";
 
     @MessageField
-    public static final String MARKET_FIRST_TIME_LISTED_ITEM = "<gradient:#34F6F2:#7D53DE>Successfully listed item on the market for the first time. <gray>{item} <yellow>{symbol}{price}";
-    @MessageField
-    public static final String MARKET_NOT_ENOUGH_TO_BUY = "Not enough money to buy this item you need {symbol}{price} to buy {item}";
-    @MessageField
-    public static final String INVALID_ITEM = "Invalid Item!";
-    @MessageField
-    public static final String INVALID_LISTING = "Invalid Listing!";
-    @MessageField
-    public static final String INVALID_PAGE = "Invalid Page!";
-    @MessageField
-    public static final String SELLER_TRANSACTION_NOT_SUCCESSFUL = "Error occured when depositing funds to seller";
-    @MessageField
-    public static final String BUYER_TRANSACTION_NOT_SUCCESSFUL = "Error occured when depositing funds to buyer" ;
+    public static String MARKET_FIRST_TIME_LISTED_ITEM = "<color:#A9F0D1>Item listed on the market for the first time! <white>{item}</white><reset><color:#A9F0D1> for <white>{symbol}{price}</white><reset><color:#A9F0D1>.</color>";
 
     @MessageField
-    public static final String BLACKMARKET_REGENERATED_CLOSING_MENU = "Closing Previous menu...";
+    public static String MARKET_NOT_ENOUGH_TO_BUY = "<color:#FF7E6B>Insufficient funds to buy <white>{item}</white><reset><color:#FF7E6B>. You need <white>{symbol}{price}</white><reset><color:#FF7E6B>.</color>";
+
     @MessageField
-    public static final String BLACKMARKET_GENERATE = "Generated new blackmarket";
+    public static String INVALID_ITEM = "<color:#FF7E6B>The specified item is invalid.</color>";
+
     @MessageField
-    public static final String BLACKMARKET_GENERATE_BROADCAST_PLAYERS = "There is a new blackmarket. using /blackmarket to view new items";
+    public static String INVALID_LISTING = "<color:#FF7E6B>The listing you provided is invalid.</color>";
+
     @MessageField
-    public static final String BLACKMARKET_NOT_ACTIVE = "No active blackmarket!";
+    public static String INVALID_PAGE = "<color:#FF7E6B>The page number you entered is invalid.</color>";
+
+    @MessageField
+    public static String SELLER_TRANSACTION_NOT_SUCCESSFUL = "<color:#FF7E6B>An error occurred while processing <white>{seller}</white><reset><color:#FF7E6B>'s funds.</color>";
+
+    @MessageField
+    public static String BUYER_TRANSACTION_NOT_SUCCESSFUL = "<color:#FF7E6B>An error occurred while processing <white>{buyer}</white><reset><color:#FF7E6B>'s funds.</color>";
+
+    @MessageField
+    public static String BLACKMARKET_REGENERATED_CLOSING_MENU = "<color:#8C5E58>Closing the previous menu...</color>";
+
+    @MessageField
+    public static String BLACKMARKET_GENERATE = "<color:#8C5E58>A new black market has been generated.</color>";
+
+    @MessageField
+    public static String BLACKMARKET_GENERATE_BROADCAST_PLAYERS = "<color:#8C5E58>A new black market is available! Use <white><underlined>/blackmarket</underlined></white><reset><color:#8C5E58> to view the items.</color>";
+
+    @MessageField
+    public static String BLACKMARKET_NOT_ACTIVE = "<color:#FF7E6B>There is no active black market at the moment.</color>";
 
     public static void saveConfig() {
         YamlFile file = new YamlFile("messages.yml", MarketplacePlugin.getInstance());
@@ -65,7 +74,7 @@ public class Messages {
                         String configValue = config.getString(configPath);
 
                         field.setAccessible(true);
-                        field.set(null, configValue.replace("{symbol}", MarketplacePlugin.getEconomySymbol()));
+                        field.set(null, configValue);
                     } else {
                         config.set(configPath, (String) field.get(null));
                     }

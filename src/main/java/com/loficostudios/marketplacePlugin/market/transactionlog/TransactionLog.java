@@ -1,7 +1,7 @@
 package com.loficostudios.marketplacePlugin.market.transactionlog;
 
 import com.loficostudios.marketplacePlugin.MarketplacePlugin;
-import com.loficostudios.marketplacePlugin.listing.ItemListing;
+import com.loficostudios.marketplacePlugin.market.listing.ItemListing;
 import com.loficostudios.marketplacePlugin.market.interfaces.ISavableLoadable;
 import com.loficostudios.marketplacePlugin.utils.FileUtils;
 import com.loficostudios.marketplacePlugin.utils.MongoDBUtils;

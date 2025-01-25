@@ -57,7 +57,7 @@ public class MarketConfig {
 
     private static @NotNull String getFormattedString(String path) {
         Component component = MiniMessage.miniMessage().deserialize("<reset/>" + getStringElseEmpty(path));
-        return LegacyComponentSerializer.legacySection().serialize(component);
+        return LegacyComponentSerializer.legacySection().serialize(component).replace("{symbol}", MarketplacePlugin.getEconomySymbol());
     }
 
     private static @NotNull String getStringElseEmpty(String path) {

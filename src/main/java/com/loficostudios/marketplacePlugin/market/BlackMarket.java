@@ -1,7 +1,7 @@
 package com.loficostudios.marketplacePlugin.market;
 
 import com.loficostudios.marketplacePlugin.MarketplacePlugin;
-import com.loficostudios.marketplacePlugin.listing.ItemListing;
+import com.loficostudios.marketplacePlugin.market.listing.ItemListing;
 import com.loficostudios.marketplacePlugin.market.api.AbstractMarket;
 import com.loficostudios.marketplacePlugin.market.api.IMarket;
 import com.loficostudios.marketplacePlugin.market.transactionlog.TransactionLog;

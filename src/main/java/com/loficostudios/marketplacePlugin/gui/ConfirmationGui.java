@@ -1,12 +1,12 @@
 package com.loficostudios.marketplacePlugin.gui;
 
-import com.loficostudios.marketplacePlugin.MarketplacePlugin;
 import com.loficostudios.marketplacePlugin.config.MarketConfig;
-import com.loficostudios.marketplacePlugin.listing.ItemListing;
+import com.loficostudios.marketplacePlugin.market.listing.ItemListing;
 import com.loficostudios.marketplacePlugin.market.api.IMarket;
 import com.loficostudios.marketplacePlugin.utils.Common;
 import com.loficostudios.melodyapi.gui.GuiIcon;
 import com.loficostudios.melodyapi.gui.MelodyGui;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
@@ -50,6 +50,8 @@ public class ConfirmationGui extends MelodyGui {
         Common.sendMessage(player, result.type().getMessage()
                 .replace("{item}", Common.getItemName(result.item()))
                 .replace("{price}", "" + result.price()));
+        if (result.isSuccess())
+            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1,1); //todo add configs for this
         close(player);
         new MarketPageGui(market, lastPage).open(player);
     }

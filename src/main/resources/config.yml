@@ -5,27 +5,26 @@ mongodb:
   password: ""
   hostname: "localhost"
   port: 27017
-transaction-log-entry-bought: "<gradient:#343124:#654321>Bought: {amount}x {item} for {symbol}{price} from {player}</gradient>"
-transaction-log-entry-sold: "<gradient:#343124:#654321>Sold: {amount}x {item} for {symbol}{price} to {player}</gradient>"
-
-black-market-interval: 1 #IN HOURS
+transaction-log-entry-bought: "<color:#8C5E58>Bought: <white>{amount}x {item}</white><reset><color:#8C5E58> for <white>{symbol}{price}</white><reset><color:#8C5E58> from <white>{player}</white><reset><color:#8C5E58>.</color>"
+transaction-log-entry-sold: "<color:#8C5E58>Sold: <white>{amount}x {item}</white><reset><color:#8C5E58> for <white>{symbol}{price}</white><reset><color:#8C5E58> to <white>{player}</white><reset><color:#8C5E58>.</color>"
+black-market-interval: 1
 gui:
   main:
-    title: "<gradient:#343124:#654321>Marketplace [Page {page}]</gradient>"
+    title: "<color:#8C5E58>Marketplace [Page <white>{page}</white><reset><color:#8C5E58>]</color>"
     next-button:
-      label: "<green>Go to page {nextPage}</green>"
+      label: "<color:#A9F0D1>Go to page <white>{nextPage}</white><reset><color:#A9F0D1></color>"
       material: GREEN_WOOL
     back-button:
-      label: "<red>Go to page {previousPage}</red>"
+      label: "<color:#FF7E6B>Go to page <white>{previousPage}</white><reset><color:#FF7E6B></color>"
       material: RED_WOOL
     listing:
-      price: "<gold>Price: {price}</gold>"
-      player: "<yellow>Seller: {player}</yellow>"
+      price: "<color:#FFD700>Price: <white>{symbol}{price}</white><reset><color:#FFD700></color>"
+      player: "<color:#FFD700>Seller: <white>{player}</white><reset><color:#FFD700></color>"
   confirmation:
-    title: "<gradient:#123456:#654321>Confirmation</gradient>"
+    title: "<color:#123456>Confirmation</color>"
     confirm-button:
-      label: "<green>Confirm</green>"
+      label: "<color:#A9F0D1>Confirm</color>"
       material: LIME_STAINED_GLASS_PANE
     cancel-button:
-      label: "<red>Cancel</red>"
+      label: "<color:#FF7E6B>Cancel</color>"
       material: RED_STAINED_GLASS_PANE
