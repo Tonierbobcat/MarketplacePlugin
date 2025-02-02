@@ -10,7 +10,7 @@ transaction-log-entry-sold: "<color:#8C5E58>Sold: <white>{amount}x {item}</white
 black-market-interval: 1
 gui:
   main:
-    title: "<color:#8C5E58>Marketplace [Page <white>{page}</white><reset><color:#8C5E58>]</color>"
+    title: "<b><gradient:#3494E6:#EC6EAD>Marketplace</gradient></b><reset><gray> - Page: {page}"
     next-button:
       label: "<color:#A9F0D1>Go to page <white>{nextPage}</white><reset><color:#A9F0D1></color>"
       material: GREEN_WOOL

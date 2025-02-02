@@ -19,6 +19,7 @@ public class GuiUtils {
         item.setItemMeta(meta);
         return item;
     }
+
     public static List<Integer> getPerimeter(int rows, int columns) {
         Set<Integer> perimeterIndexes = new LinkedHashSet<>();
 

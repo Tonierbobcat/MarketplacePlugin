@@ -16,49 +16,22 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class Common {
 
-    private static final Map<String, String> formatMap = new HashMap<>();
-    static {
-        formatMap.put("§0", "<black>");
-        formatMap.put("§1", "<dark_blue>");
-        formatMap.put("§2", "<dark_green>");
-        formatMap.put("§3", "<dark_aqua>");
-        formatMap.put("§4", "<dark_red>");
-        formatMap.put("§5", "<dark_purple>");
-        formatMap.put("§6", "<gold>");
-        formatMap.put("§7", "<gray>");
-        formatMap.put("§8", "<dark_gray>");
-        formatMap.put("§9", "<blue>");
-        formatMap.put("§a", "<green>");
-        formatMap.put("§b", "<aqua>");
-        formatMap.put("§c", "<red>");
-        formatMap.put("§d", "<light_purple>");
-        formatMap.put("§e", "<yellow>");
-        formatMap.put("§f", "<white>");
-        formatMap.put("§l", "<bold>");
-        formatMap.put("§o", "<italic>");
-        formatMap.put("§n", "<underline>");
-        formatMap.put("§m", "<strikethrough>");
-        formatMap.put("§k", "<obfuscated>");
-        formatMap.put("§r", "<reset>");
-    }
 
-    public static String legacyToMiniMessages(String message) {
-        for (Map.Entry<String, String> entry : formatMap.entrySet()) {
-            message = message.replace(entry.getKey(), entry.getValue());
-        }
-        return message.replaceAll("§#([0-9a-fA-F]{6})", "<color:#$1>");
-    }
+
+
 
     public static void sendMessage(Player player, String message) {
         var mm = MiniMessage.miniMessage();
 
         Component component = null;
         try {
-            component = mm.deserialize("<reset/>" + legacyToMiniMessages(message.replace("{symbol}", MarketplacePlugin.getEconomySymbol())));
+            component = mm.deserialize("<reset/>" + MiniMessageUtils.legacyToMiniMessages(message.replace("{symbol}", MarketplacePlugin.getEconomySymbol())));
         } catch (Exception e) {
             MarketplacePlugin.getInstance().getLogger().log(Level.SEVERE, "Failed to deserialize message " + e.getMessage());
             return;
